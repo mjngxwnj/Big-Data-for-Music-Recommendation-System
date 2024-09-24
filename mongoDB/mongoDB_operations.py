@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from pymongo.errors import ConnectionError, OperationFailure
+from pymongo.errors import ConnectionFailure, OperationFailure
 from contextlib import contextmanager
 
 """ Context manager for mongoDB connection. """
@@ -18,7 +18,7 @@ def mongoDB_client(username: str, password: str,
         yield client
 
     #handle error
-    except ConnectionError:
+    except ConnectionFailure:
         print("Connection to mongoDB failed!")
 
     except OperationFailure:
@@ -27,6 +27,7 @@ def mongoDB_client(username: str, password: str,
     #close client
     finally:
         client.close()
+        print("The connection to MongoDB has stopped!")
 
 """ Class mongoDB for operations. """
 class mongoDB_operations:
@@ -76,7 +77,7 @@ class mongoDB_operations:
     """ Insert data"""
     def insert_data(self, database: str, collection: str, data: list[dict]):
         #check if data are right type
-        if not isinstance(data, list[dict]):
+        if not isinstance(data, list) or not all(isinstance(item, dict) for item in data):
             raise TypeError("data must be a list of dictionaries!")
         
         #check whether collection exists
@@ -87,3 +88,8 @@ class mongoDB_operations:
         #db or collection does not exist
         else:
             print(f"Collection '{collection}' or database '{database}' does not exist!")
+
+if __name__ == '__main__':
+    with mongoDB_client('huynhthuan', 'password') as client:
+        client = mongoDB_operations(client)
+        client.create_database('test')
