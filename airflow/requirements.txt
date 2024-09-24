@@ -1,0 +1,3 @@
+apache-airflow-providers-apache-spark>=1.8.0
+apache-airflow-providers-snowflake
+pyspark==3.4.3
