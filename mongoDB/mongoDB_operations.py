@@ -1,4 +1,4 @@
-from pymongo import MongoClient
+from pymongo import MongoClient, database, collection
 from pymongo.errors import ConnectionFailure, OperationFailure
 from contextlib import contextmanager
 
@@ -8,6 +8,7 @@ def mongoDB_client(username: str, password: str,
                     host: str = 'mongo', port: str = 27017):
     #set path
     path = f"mongodb://{username}:{password}@{host}:{port}/"
+    client = None
 
     #init
     try:
@@ -32,64 +33,73 @@ def mongoDB_client(username: str, password: str,
 """ Class mongoDB for operations. """
 class mongoDB_operations:
     """ Init """
-    def __init__(self, client: MongoClient, database: str = None, collection: str = None):
+    def __init__(self, client: MongoClient):
         #check params
         if not isinstance(client, MongoClient):
             raise TypeError('client must be MongoClient!')
         
         #set value for class attrs
         self.client = client
-        self.database = database
-        self.collection = collection
 
     """ Check whether the database exists. """
-    def check_database_exists(self, database: str) -> bool:
+    def check_database_exists(self, database_name: str) -> bool:
         #list database name
-        return database in self.client.list_database_names()
+        return database_name in self.client.list_database_names()
 
     """ Check whether collection exists. """
-    def check_collection_exists(self, database: str, collection: str) -> bool:
-        #check whether database exists
-        if self.check_database_exists(database):
-            #list collection name
-            return collection in self.client[database].list_collection_names()
-        #collection does not exist
-        return False
+    def check_collection_exists(self, database_obj: database.Database, collection: str) -> bool:
+        #check params
+        if not isinstance(database_obj, database.Database):
+            raise TypeError("database_obj must be a database.Database!")
+        
+        #list collection name
+        return collection in self.client[database_obj.name].list_collection_names()
 
     """ Create new database. """
-    def create_database(self, database: str):
+    def create_database_if_not_exists(self, database_name: str) -> database.Database:
         #check whether database exists
-        if self.check_database_exists(database):
-            print(f"The database '{database}' exists!")
-        #create db
-        else:
-            self.client[database]
+        if self.check_database_exists(database_name):
+            print(f"Don't create the database '{database_name}' because it already exists.")
+        
+        #return database
+        return self.client[database_name]
     
     """ Create new collection. """
-    def create_collection(self, database: str, collection: str):
-        #check whether database exists
-        if self.check_collection_exists(database, collection):
-            print(f"The collection '{collection} exists!")
-        #create collection
-        else:
-            self.client[database][collection]
+    def create_collection_if_not_exist(self, database_obj: database.Database, collection: str) -> collection.Collection:
+        #check params
+        if not isinstance(database_obj, database.Database):
+            raise TypeError("database_obj must be a database.Database!")
+        
+        #check whether collection exists
+        if self.check_collection_exists(database_obj, collection):
+            print(f"Don't create the collection '{collection}' because it already exists.")
+        
+        #return collection
+        return self.client[database_obj.name][collection]
 
-    """ Insert data"""
-    def insert_data(self, database: str, collection: str, data: list[dict]):
-        #check if data are right type
+    """ Insert data """
+    def insert_data(self, collection_obj: collection.Collection, data: list[dict]):
+        #check params
         if not isinstance(data, list) or not all(isinstance(item, dict) for item in data):
             raise TypeError("data must be a list of dictionaries!")
         
-        #check whether collection exists
-        if self.check_collection_exists(database, collection):
-            #insert data
-            self.client[database][collection].insert_many(data)
-
-        #db or collection does not exist
-        else:
-            print(f"Collection '{collection}' or database '{database}' does not exist!")
+        if not isinstance(collection_obj, collection.Collection):
+            raise TypeError("collection_obj must be a collection.Collection!")
+        
+        #insert data
+        collection_obj.insert_many(data)
 
 if __name__ == '__main__':
     with mongoDB_client('huynhthuan', 'password') as client:
         client = mongoDB_operations(client)
-        client.create_database('test')
+
+        client_db = client.create_database_if_not_exists('testdb')
+
+        print(type(client_db))
+
+        client_collection = client.create_collection_if_not_exist(client_db,'testcollection')
+
+        print(type(client_collection))
+
+        client_data = client.insert_data(client_collection,  [{'Name':'Thuan'}])
+        
