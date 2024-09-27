@@ -7,7 +7,7 @@ from contextlib import contextmanager
 def mongoDB_client(username: str, password: str, 
                     host: str = 'mongo', port: str = 27017):
     #set path
-    path = f"mongodb://{username}:{password}@{host}:{port}/"
+    path = f"mongodb://{username}:{password}@{host}:{port}"
     client = None
 
     #init
