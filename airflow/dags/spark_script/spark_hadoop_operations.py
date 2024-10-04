@@ -13,13 +13,11 @@ def get_sparkSession(appName: str, master: str = 'local'):
     conf = SparkConf()
 
     #set config
-    conf.setAppName(appName)
-    conf.setMaster(master)
-    conf.set("spark.executor.memory", "2g") \
-        .set("spark.executor.cores", "2") \
-        #.set("spark.mongodb.input.uri", "mongodb://huynhthuan:password@mongo:27017/") \
-        #.set("spark.mongodb.output.uri", "mongodb://huynhthuan:password@mongo:27017") \
-        #.set('spark.jars.packages', 'org.mongodb.spark:mongo-spark-connector_2.12:3.0.1')
+    conf = conf.setAppName(appName) \
+               .setMaster(master) \
+               .set("spark.executor.memory", "2g") \
+               .set("spark.executor.cores", "2") \
+               .set("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0")
     
     #create Spark Session
     spark = SparkSession.builder.config(conf = conf).getOrCreate()
@@ -51,8 +49,8 @@ def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str,
     print(f"Starting to read data from database '{database_name}' and collection '{collection_name}'...")
   
     #read data
-    data = spark.read.format("com.mongodb.spark.sql.DefaultSource") \
-                     .option("spark.mongodb.input.uri",uri).load()
+    data = spark.read.format("mongodb") \
+                     .option("spark.mongodb.read.connection.uri", uri).load()
 
     #retun data 
     return data 
@@ -93,9 +91,10 @@ def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, table_name: str
     #write data
     try:
         data.write.format(file_type) \
-                .option('header', 'true') \
-                .mode('overwrite') \
-                .save(HDFS_path)
+                  .option('header', 'true') \
+                  .mode('overwrite') \
+                  .save(HDFS_path)
+        
         print(f"Successfully uploaded '{table_name}' into HDFS.")
 
     except Exception:
@@ -103,6 +102,6 @@ def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, table_name: str
         
 if __name__ == '__main__':
     with get_sparkSession('testSpark') as spark:
-        print(type(spark))
         data = read_mongoDB(spark, database_name= 'testdb', collection_name= 'testcollection')
         data.show()
+        write_HDFS(spark, data, 'test', 'parquet')

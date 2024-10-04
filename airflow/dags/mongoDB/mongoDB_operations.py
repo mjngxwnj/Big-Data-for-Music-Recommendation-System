@@ -65,7 +65,7 @@ class mongoDB_operations:
         return self.client[database_name]
     
     """ Create new collection. """
-    def create_collection_if_not_exist(self, database_obj: database.Database, collection: str) -> collection.Collection:
+    def create_collection_if_not_exists(self, database_obj: database.Database, collection: str) -> collection.Collection:
         #check params
         if not isinstance(database_obj, database.Database):
             raise TypeError("database_obj must be a database.Database!")
@@ -76,7 +76,7 @@ class mongoDB_operations:
         
         #return collection
         return self.client[database_obj.name][collection]
-
+    
     """ Insert data """
     def insert_data(self, collection_obj: collection.Collection, data: list[dict]):
         #check params
@@ -89,17 +89,17 @@ class mongoDB_operations:
         #insert data
         collection_obj.insert_many(data)
 
-if __name__ == '__main__':
-    with mongoDB_client('huynhthuan', 'password') as client:
-        client = mongoDB_operations(client)
+# if __name__ == '__main__':
+#     with mongoDB_client('huynhthuan', 'password') as client:
+#         client = mongoDB_operations(client)
 
-        client_db = client.create_database_if_not_exists('testdb')
+#         client_db = client.create_database_if_not_exists('testdb')
 
-        print(type(client_db))
+#         print(type(client_db))
 
-        client_collection = client.create_collection_if_not_exist(client_db,'testcollection')
+#         client_collection = client.create_collection_if_not_exist(client_db,'testcollection')
 
-        print(type(client_collection))
+#         print(type(client_collection))
 
-        client_data = client.insert_data(client_collection,  [{'Name':'Thuan'}])
-        
+#         client_data = client.insert_data(client_collection,  [{'Name':'Thuan'}])
+    
