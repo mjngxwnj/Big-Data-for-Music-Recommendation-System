@@ -3,7 +3,7 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 from datetime import datetime
 import mongoDB
-import mongoDB.load_mongoDb
+import mongoDB.load_data_mongoDb
 
 """ Set default args for DAG. """
 default_args = {
@@ -21,16 +21,19 @@ with DAG(
     render_template_as_native_obj = True,
     catchup = False
 ) as dag:
-    demo_pipeline1 = PythonOperator(
-        task_id = 'demo_pipeline1',
-        python_callable = mongoDB.load_mongoDb.main
+    
+    """ Load artist data into mongoDB. """
+    load_artist_mongoDB = PythonOperator(
+        task_id = 'load_artist_mongoDB',
+        python_callable = mongoDB.load_data_mongoDb.load_mongodb_artist
     )
 
-    demo_pipeline2 = SparkSubmitOperator(
-        task_id = 'demo_pipeline2',
-        application = '/opt/airflow/dags/spark_script/data_read_mongoDB.py',
-        conn_id = 'spark_default',
-        packages = 'org.mongodb.spark:mongo-spark-connector_2.12:10.4.0',
-    )
 
-demo_pipeline1 >> demo_pipeline2
+    # demo_pipeline2 = SparkSubmitOperator(
+    #     task_id = 'demo_pipeline2',
+    #     application = '/opt/airflow/dags/spark_script/data_read_mongoDB.py',
+    #     conn_id = 'spark_default',
+    #     packages = 'org.mongodb.spark:mongo-spark-connector_2.12:10.4.0',
+    # )
+
+load_artist_mongoDB

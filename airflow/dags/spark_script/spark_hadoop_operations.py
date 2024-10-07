@@ -35,7 +35,7 @@ def get_sparkSession(appName: str, master: str = 'local'):
 
 
 """ Read data from mongoDB. """
-def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str, 
+def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str,
                  username: str = 'huynhthuan', password: str = 'password', 
                  host: str = 'mongo', port: str = 27017) -> pyspark.sql.DataFrame:
     
@@ -50,7 +50,8 @@ def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str,
   
     #read data
     data = spark.read.format("mongodb") \
-                     .option("spark.mongodb.read.connection.uri", uri).load()
+                     .option("spark.mongodb.read.connection.uri", uri) \
+                     .load()
 
     #retun data 
     return data 
@@ -99,9 +100,3 @@ def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, table_name: str
 
     except Exception:
         print("An error occured while upload data into HDFS!")
-        
-if __name__ == '__main__':
-    with get_sparkSession('testSpark') as spark:
-        data = read_mongoDB(spark, database_name= 'testdb', collection_name= 'testcollection')
-        data.show()
-        write_HDFS(spark, data, 'test', 'parquet')

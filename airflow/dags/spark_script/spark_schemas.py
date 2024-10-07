@@ -4,14 +4,14 @@ from pyspark.sql.types import StructType, StructField, StringType, IntegerType, 
 def get_schema(table_name: str) -> StructType:
     
     """ Artist_position schema. """
-    artist_position_schema = [StructField('Pos',    StringType(), True),
+    artist_rank_schema = [StructField('Pos',    StringType(), True),
                               StructField('Artist', StringType(), True)]
     #applying struct type
-    artist_position_schema = StructType(artist_position_schema)  
+    artist_rank_schema = StructType(artist_rank_schema)  
 
 
     """ Artist schema. """
-    artist_schema = [StructField('Artist_Id',    StringType(), True),
+    artist_schema = [StructField('Artist_ID',    StringType(), True),
                      StructField('Artist_Name',  StringType(), True),
                      StructField('Genres',       ArrayType(StringType(), True), True),
                      StructField('Followers',    IntegerType(), True),
@@ -46,6 +46,12 @@ def get_schema(table_name: str) -> StructType:
     #Applying struct type
     album_schema = StructType(album_schema)
 
+    #mapping
+    mapping = {
+        'artist_rank': artist_rank_schema,
+        'artist': artist_schema,
+        'album': album_schema
+    }
 
-    """ Track schema. """
-    track_schema = [StructField()]
+    #return schema
+    return mapping[table_name]

@@ -60,7 +60,9 @@ class mongoDB_operations:
         #check whether database exists
         if self.check_database_exists(database_name):
             print(f"Don't create the database '{database_name}' because it already exists.")
-        
+        else:
+            print(f"Successfully created database '{database_name}'.")
+
         #return database
         return self.client[database_name]
     
@@ -73,7 +75,9 @@ class mongoDB_operations:
         #check whether collection exists
         if self.check_collection_exists(database_obj, collection):
             print(f"Don't create the collection '{collection}' because it already exists.")
-        
+        else:
+            print(f"Successfully created collection '{collection}'.")
+
         #return collection
         return self.client[database_obj.name][collection]
     
@@ -89,17 +93,4 @@ class mongoDB_operations:
         #insert data
         collection_obj.insert_many(data)
 
-# if __name__ == '__main__':
-#     with mongoDB_client('huynhthuan', 'password') as client:
-#         client = mongoDB_operations(client)
-
-#         client_db = client.create_database_if_not_exists('testdb')
-
-#         print(type(client_db))
-
-#         client_collection = client.create_collection_if_not_exist(client_db,'testcollection')
-
-#         print(type(client_collection))
-
-#         client_data = client.insert_data(client_collection,  [{'Name':'Thuan'}])
-    
+        print(f"Successfully inserted data into collection '{collection_obj.name}'.")
