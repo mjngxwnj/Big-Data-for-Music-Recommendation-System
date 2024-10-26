@@ -1,0 +1,105 @@
+version: '3.9'
+
+services:
+  #MongoDB
+  mongo:
+    image: mongo:latest
+    container_name: mongodb_container
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: huynhthuan
+      MONGO_INITDB_ROOT_PASSWORD: password
+    # volumes:
+    #   - ./mongoDB:/mongoDB
+    #   - ./data:/data
+    ports:
+      - 27017:27017
+    networks:
+      - data_network
+  
+  #MongoDB UI
+  mongo-UI:
+    image: mongo-express
+    container_name: mongo_UI_container
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: huynhthuan
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_SERVER: mongo
+    ports:
+      - 8081:8081
+    networks:
+      - data_network
+  
+  #HDFS namenode
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    environment:
+      - CLUSTER_NAME=hadoop-cluster
+    env_file:
+      - ./hadoop.env
+    ports:
+      - "9870:9870"  
+      - "9000:9000"  
+      - "8020:8020"
+    networks:
+      - data_network
+  
+  #HDFS DataNode
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    env_file:
+      - ./hadoop.env
+    ports:
+      - "9864:9864"  
+    depends_on:
+      - namenode
+    networks:
+      - data_network
+  
+  #Airflow
+  airflow:
+    build:
+      context: ./airflow
+      dockerfile: dockerfile
+    container_name: airflow
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/dags/spark_script:/opt/airflow/dags/spark_script
+      - ./airflow/dags/mongoDB:/opt/airflow/dags/mongoDB
+      - ./data:/opt/data
+      - ./jars:/opt/jars
+    ports:
+     - 8080:8080
+    command: >
+      bash -c '(airflow db init && 
+      airflow users create 
+      --username huynhthuan 
+      --password password 
+      --firstname Thuan 
+      --lastname Huynh 
+      --role Admin
+      --email HuynhThuan@gmail.com);
+      airflow webserver & airflow scheduler'
+    networks:
+      - data_network
+  
+  #Notebook
+  notebook:
+    build: 
+      context: ./notebook
+      dockerfile: dockerfile
+    container_name: notebook
+    volumes:
+      - ./notebook:/home/jovyan/work
+      - ./data:/opt/data
+      - ./jars:/jars
+    ports:
+      - 8888:8888
+    networks:
+      - data_network
+  
+  #Networks
+networks:
+  data_network:
+    driver: bridge
