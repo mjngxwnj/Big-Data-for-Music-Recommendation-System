@@ -8,15 +8,16 @@ import pyspark.sql
 
 """ Context manager for creating Spark Session. """
 @contextmanager
-def get_sparkSession(appName: str, master: str = 'local'):
+def get_sparkSession(appName: str, master: str = 'local[4]'):
     #declare sparkconf
     conf = SparkConf()
 
     #set config
     conf = conf.setAppName(appName) \
                .setMaster(master) \
-               .set("spark.executor.memory", "2g") \
-               .set("spark.executor.cores", "2") \
+               .set("spark.executor.memory", "4g") \
+               .set("spark.executor.cores", "4") \
+               .set("spark.sql.legacy.timeParserPolicy", "LEGACY") \
                .set("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0")
     
     #create Spark Session
@@ -53,12 +54,12 @@ def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str, 
   
     #read data
     try:
-        data = spark.read.format("mongodb") \
-                        .option("spark.mongodb.read.connection.uri", uri) \
-                        .schema(schema) \
-                        .load()
+        data = spark.read.format('mongodb') \
+                         .option("spark.mongodb.read.connection.uri", uri) \
+                         .option('header', 'true')
+        
+        data = data.schema(schema).load() if schema is not None else data.load()
 
-        #retun data 
         return data 
     
     except Exception:
@@ -72,7 +73,7 @@ def read_HDFS(spark: SparkSession, HDFS_dir: str, file_type: str) -> pyspark.sql
         raise TypeError("spark must be a SparkSession!")
     
     #set HDFS path
-    HDFS_path = f"hdfs://namenode:9000/datalake/{HDFS_dir}"
+    HDFS_path = f"hdfs://namenode:9000/{HDFS_dir}"
 
     print(f"Starting to read data from {HDFS_path}...")
 
@@ -104,7 +105,7 @@ def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, table_name: str
     try:
         data.write.format(file_type) \
                   .option('header', 'true') \
-                  .mode('overwrite') \
+                  .mode('append') \
                   .save(HDFS_path)
         
         print(f"Successfully uploaded '{table_name}' into HDFS.")

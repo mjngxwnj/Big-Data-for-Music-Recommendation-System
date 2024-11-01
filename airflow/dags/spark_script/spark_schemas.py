@@ -39,7 +39,7 @@ def get_schema(table_name: str) -> StructType:
     album_schema = StructType(album_schema)
 
     """ Track schema. """
-    track_schema = [StructField("Artist",           StringType(), True),
+    track_schema = [StructField("Artists",           StringType(), True),
                     StructField("Album_ID",         StringType(), True),
                     StructField("Album_Name",       StringType(), True),
                     StructField("Track_ID",         StringType(), True),
