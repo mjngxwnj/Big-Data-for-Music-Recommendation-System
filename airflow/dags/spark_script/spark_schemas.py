@@ -65,7 +65,7 @@ def get_schema(table_name: str) -> StructType:
                            StructField("Energy",           FloatType(), True),
                            StructField("Key",              IntegerType(), True),
                            StructField("Loudness",         FloatType(), True),
-                           StructField("Mode",             BooleanType(), True),
+                           StructField("Mode",             IntegerType(), True),
                            StructField("Speechiness",      FloatType(), True),
                            StructField("Acousticness",     FloatType(), True),
                            StructField("Instrumentalness", FloatType(), True),
