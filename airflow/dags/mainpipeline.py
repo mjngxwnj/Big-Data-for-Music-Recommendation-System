@@ -9,10 +9,26 @@ import mongoDB.load_data_mongoDb
 default_args = {
     'owner': 'huynhthuan',
     'depends_on_past': False,
-    'start_date': datetime(2024,9,28)
 }
 
-""" Create dag. """
+""" Create a DAG to upload initial crawled CSV data into MongoDB."""
+with DAG(
+    description = "DAG to upload initial crawled CSV data into MongoDB.",
+    dag_id = 'Initial_load',
+    default_args = default_args,
+    schedule_interval = '@once',
+    start_date = datetime(2024, 11, 10)
+) as init_load_dag:
+    
+    """ Load initial csv data. """
+    initial_load = SparkSubmitOperator(
+        task_id = 'initial_load',
+        conn_id = 'spark_default',
+        application = '/opt/airflow/dags/init_load.py',
+        name = 'upload_initial_csv_file',
+        packages = 'org.mongodb.spark:mongo-spark-connector_2.12:10.4.0'
+    )
+
 with DAG(
     description = 'Extract, Transform, and Load Music Data for Analytics and Recommendation System',
     dag_id = 'Music_data_pipeline',
@@ -20,20 +36,50 @@ with DAG(
     schedule_interval = None,
     render_template_as_native_obj = True,
     catchup = False
-) as dag:
+) as daily_dag:
     
-    """ Load artist data into mongoDB. """
-    load_artist_mongoDB = PythonOperator(
-        task_id = 'load_artist_mongoDB',
-        python_callable = mongoDB.load_data_mongoDb.load_mongodb_artist
+    """ Run the Bronze layer task. """
+    bronze_layer_task = SparkSubmitOperator(
+        task_id = 'bronze_layer_task',
+        conn_id = 'spark_default',
+        application = '/opt/airflow/dags/spark_script/bronze_script.py',
+        name = 'bronze_layer_processing_script',
+        conf={
+            'spark.executor.memory': '2g',
+            'spark.executor.cores': '2',
+            'spark.executor.instances': '2',
+            "spark.sql.shuffle.partitions": '4',
+            "spark.jars.packages": "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0"
+        }
     )
 
+    """ Run the Silver layer task. """
+    silver_layer_task = SparkSubmitOperator(
+        task_id = 'silver_layer_task',
+        conn_id = 'spark_default',
+        application = '/opt/airflow/dags/spark_script/silver_script.py',
+        name = 'silver_layer_processing_script',
+        conf={
+            "spark.executor.memory": '2g',
+            "spark.executor.cores": '2',
+            "spark.executor.instances": '2',
+            "spark.sql.shuffle.partitions": '4',
+            "spark.jars.packages": "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0"
+        }
+    )
 
-    # demo_pipeline2 = SparkSubmitOperator(
-    #     task_id = 'demo_pipeline2',
-    #     application = '/opt/airflow/dags/spark_script/data_read_mongoDB.py',
-    #     conn_id = 'spark_default',
-    #     packages = 'org.mongodb.spark:mongo-spark-connector_2.12:10.4.0',
-    # )
-
-load_artist_mongoDB
+    """ Run the Gold layer task. """
+    gold_layer_task = SparkSubmitOperator(
+        task_id = 'gold_layer_task',
+        conn_id = 'spark_default',
+        application = '/opt/airflow/dags/spark_script/gold_script.py',
+        name = 'silver_layer_processing_script',
+        conf={
+            "spark.executor.memory": '2g',
+            "spark.executor.cores": '2',
+            "spark.executor.instances": '2',
+            "spark.sql.shuffle.partitions": '4',
+            "spark.jars.packages": "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0"
+        }
+    )
+    bronze_layer_task >> silver_layer_task >> gold_layer_task

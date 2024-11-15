@@ -8,7 +8,7 @@ import pyspark.sql
 
 """ Context manager for creating Spark Session. """
 @contextmanager
-def get_sparkSession(appName: str, master: str = 'local[4]'):
+def get_sparkSession(appName: str, master: str = 'local'):
     #declare sparkconf
     conf = SparkConf()
 
@@ -16,10 +16,12 @@ def get_sparkSession(appName: str, master: str = 'local[4]'):
     conf = conf.setAppName(appName) \
                .setMaster(master) \
                .set("spark.executor.memory", "4g") \
-               .set("spark.executor.cores", "4") \
+               .set("spark.executor.cores", "2") \
+               .set("spark.sql.shuffle.partitions", "4") \
                .set("spark.sql.legacy.timeParserPolicy", "LEGACY") \
                .set("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0")
     
+    #               .set("spark.executor.instances", "2") \
     #create Spark Session
     spark = SparkSession.builder.config(conf = conf).getOrCreate()
 
@@ -36,13 +38,16 @@ def get_sparkSession(appName: str, master: str = 'local[4]'):
 
 
 """ Read data from mongoDB. """
-def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str, schema: StructType = None,
-                 username: str = 'huynhthuan', password: str = 'password', 
+def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str, chunk_params: list = None,
+                 schema: StructType = None, username: str = 'huynhthuan', password: str = 'password', 
                  host: str = 'mongo', port: str = 27017) -> pyspark.sql.DataFrame:
     
     #check params
     if not isinstance(spark, SparkSession):
         raise TypeError("spark must be a SparkSession!")
+    
+    if chunk_params is not None and not isinstance(chunk_params, list):
+        raise TypeError("chunk_params must be a dict!")
     
     if schema is not None and not isinstance(schema, StructType):
         raise TypeError("schema must be a StructType!")
@@ -73,7 +78,7 @@ def read_HDFS(spark: SparkSession, HDFS_dir: str, file_type: str) -> pyspark.sql
         raise TypeError("spark must be a SparkSession!")
     
     #set HDFS path
-    HDFS_path = f"hdfs://namenode:9000/{HDFS_dir}"
+    HDFS_path = f"hdfs://namenode:9000/datalake/{HDFS_dir}"
 
     print(f"Starting to read data from {HDFS_path}...")
 
@@ -88,7 +93,7 @@ def read_HDFS(spark: SparkSession, HDFS_dir: str, file_type: str) -> pyspark.sql
 
 
 """ Write data into HDFS. """
-def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, table_name: str, file_type: str):
+def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, file_type: str):
     #check params
     if not isinstance(spark, SparkSession):
         raise TypeError("spark must be a SparkSession!")
@@ -97,7 +102,8 @@ def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, table_name: str
         raise TypeError("data must be a DataFrame!")
 
     #set HDFS path  
-    HDFS_path = f"hdfs://namenode:9000/datalake/{table_name}"
+    HDFS_path = f"hdfs://namenode:9000/datalake/{direct}"
+    table_name = direct.split('/')[-1]
 
     print(f"Starting to upload '{table_name}' into {HDFS_path}...")
     

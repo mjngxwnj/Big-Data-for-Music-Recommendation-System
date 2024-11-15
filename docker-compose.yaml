@@ -90,6 +90,7 @@ services:
       context: ./notebook
       dockerfile: dockerfile
     container_name: notebook
+    mem_limit: 4g
     volumes:
       - ./notebook:/home/jovyan/work
       - ./data:/opt/data

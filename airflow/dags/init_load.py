@@ -1,4 +1,5 @@
 from spark_script.spark_hadoop_operations import get_sparkSession
+
 """ Load all csv files into mongoDB."""
 if __name__ == "__main__":
     with get_sparkSession(appName = "init_load") as spark:
