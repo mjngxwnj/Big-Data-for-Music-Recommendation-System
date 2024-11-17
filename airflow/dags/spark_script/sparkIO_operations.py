@@ -118,3 +118,27 @@ def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, fi
 
     except Exception:
         print("An error occurred while upload data into HDFS!")
+
+""" Write data into SnowFlake Data Warehouse. """
+def write_SnowFlake(spark: SparkSession, data: pyspark.sql.DataFrame, table_name: str):
+    #check params
+    if not isinstance(spark, SparkSession):
+        raise TypeError("spark must be a SparkSession!")
+    
+    if not isinstance(data, pyspark.sql.DataFrame):
+        raise TypeError("data must be a DataFrame!")
+    
+    snowflake_connection_options = {
+        "sfURL": "https://sl70006.southeast-asia.azure.snowflakecomputing.com",
+        "sfUser": "HUYNHTHUAN", 
+        "sfPassword": "Thuan123456",
+        "sfWarehouse": "COMPUTE_WH"
+    }
+
+    data.write.format("snowflake") \
+              .options(**snowflake_connection_options) \
+              .option("dbtable", table_name) \
+              .mode('overwrite') \
+              .save()
+    
+    

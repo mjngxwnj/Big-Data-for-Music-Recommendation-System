@@ -75,4 +75,4 @@ if __name__ == "__main__":
     with get_sparkSession('gold_task_spark') as spark:
         print("------------------------------- Gold task starts! -------------------------------")
         gold_layer_processing(spark)
-        print("------------------------------- Gold task starts! -------------------------------")
+        print("------------------------------- Gold task finished! -------------------------------")
