@@ -1,4 +1,4 @@
-from spark_hadoop_operations import *
+from spark_script.sparkIO_operations import *
 from silver_class import SilverLayer
 from pyspark.sql.functions import col, year
 
@@ -69,10 +69,11 @@ def silver_track_process(spark):
     bronze_track = read_HDFS(spark, HDFS_dir = 'bronze_data/bronze_track', file_type = 'parquet')
     #applying Silver Layer class
     silver_track = SilverLayer(data               = bronze_track,
-                                drop_columns      = ['Artists', 'Type', 'AvailableMarkets', 'Href', 'Uri', 'Is_Local'],
-                                drop_null_columns = ['Track_ID'],
-                                duplicate_columns = ['Track_ID'],
-                                rename_columns    = {'Album_ID': 'album_id',
+                               drop_columns       = ['Artists', 'Type', 'AvailableMarkets', 'Href', 'Uri', 'Is_Local'],
+                               drop_null_columns  = ['Track_ID'],
+                               fill_nulls_columns = {'Restrictions': 'None'},
+                               duplicate_columns  = ['Track_ID'],
+                               rename_columns     = {'Album_ID': 'album_id',
                                                      'Album_Name': 'album_name',
                                                      'Track_ID': 'id',
                                                      'Name': 'name',

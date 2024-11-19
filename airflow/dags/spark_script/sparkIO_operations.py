@@ -19,7 +19,8 @@ def get_sparkSession(appName: str, master: str = 'local'):
                .set("spark.executor.cores", "2") \
                .set("spark.sql.shuffle.partitions", "4") \
                .set("spark.sql.legacy.timeParserPolicy", "LEGACY") \
-               .set("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0")
+               .set("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0") \
+               .set("spark.jars.packages", "net.snowflake:spark-snowflake_2.12:2.12.0-spark_3.4")
     
     #               .set("spark.executor.instances", "2") \
     #create Spark Session
@@ -67,8 +68,8 @@ def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str, 
 
         return data 
     
-    except Exception:
-        print("An error occurred while reading data from mongoDB.")
+    except Exception as e:
+        print(f"An error occurred while reading data from mongoDB: {e}")
 
 
 """ Read data from HDFS. """
@@ -88,8 +89,8 @@ def read_HDFS(spark: SparkSession, HDFS_dir: str, file_type: str) -> pyspark.sql
         #return data
         return data
     
-    except Exception:
-        print("An error occurred while reading data from HDFS.")
+    except Exception as e:
+        print(f"An error occurred while reading data from HDFS: {e}")
 
 
 """ Write data into HDFS. """
@@ -116,8 +117,8 @@ def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, fi
         
         print(f"Successfully uploaded '{table_name}' into HDFS.")
 
-    except Exception:
-        print("An error occurred while upload data into HDFS!")
+    except Exception as e:
+        print(f"An error occurred while upload data into HDFS: {e}")
 
 """ Write data into SnowFlake Data Warehouse. """
 def write_SnowFlake(spark: SparkSession, data: pyspark.sql.DataFrame, table_name: str):
@@ -132,13 +133,18 @@ def write_SnowFlake(spark: SparkSession, data: pyspark.sql.DataFrame, table_name
         "sfURL": "https://sl70006.southeast-asia.azure.snowflakecomputing.com",
         "sfUser": "HUYNHTHUAN", 
         "sfPassword": "Thuan123456",
-        "sfWarehouse": "COMPUTE_WH"
+        "sfWarehouse": "COMPUTE_WH",
+        "sfDatabase": "SPOTIFY_MUSIC_DB" 
     }
 
-    data.write.format("snowflake") \
-              .options(**snowflake_connection_options) \
-              .option("dbtable", table_name) \
-              .mode('overwrite') \
-              .save()
-    
+    print(f"Starting to upload {table_name.split('.')[-1]} into SnowFlake...")
+    try:
+        data.write.format("snowflake") \
+                .options(**snowflake_connection_options) \
+                .option("dbtable", table_name) \
+                .mode('append') \
+                .save()
+        print(f"Successfully uploaded '{table_name}' into SnowFlake.")
+    except Exception as e:
+        print(f"An error occurred while upload data into HDFS: {e}")
     

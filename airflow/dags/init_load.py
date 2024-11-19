@@ -1,5 +1,5 @@
-from spark_script.spark_hadoop_operations import get_sparkSession
-
+from spark_script.sparkIO_operations import *
+from pyspark.sql.functions import current_date
 """ Load all csv files into mongoDB."""
 if __name__ == "__main__":
     with get_sparkSession(appName = "init_load") as spark:
@@ -11,11 +11,21 @@ if __name__ == "__main__":
         uri_trackfeature = "mongodb://huynhthuan:password@mongo:27017/music_database.trackfeature_collection?authSource=admin"
 
         # read
+        print("Starting to load all csv files into MongoDB...")
         df_ArtistName = spark.read.option('header', 'true').csv("/opt/data/ArtistName.csv")
+        df_ArtistName = df_ArtistName.withColumn('Execution_date', current_date())
+        
         df_Artist = spark.read.option('header', 'true').csv("/opt/data/Artist.csv")
+        df_Artist = df_Artist.withColumn('Execution_date', current_date())
+
         df_Album = spark.read.option('header', 'true').csv("/opt/data/Album.csv")
+        df_Album = df_Album.withColumn('Execution_date', current_date())
+
         df_Track = spark.read.option('header', 'true').csv("/opt/data/Track.csv")
+        df_Track = df_Track.withColumn('Execution_date', current_date())
+        
         df_TrackFeature = spark.read.option('header', 'true').csv("/opt/data/TrackFeature.csv")
+        df_TrackFeature = df_TrackFeature.withColumn('Execution_date', current_date())
 
 
         #write

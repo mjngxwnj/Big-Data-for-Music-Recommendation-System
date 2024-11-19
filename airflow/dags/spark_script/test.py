@@ -1,4 +1,4 @@
-from spark_hadoop_operations import get_sparkSession, read_mongoDB, write_HDFS
+from spark_script.sparkIO_operations import get_sparkSession, read_mongoDB, write_HDFS
 
 if __name__ == "__main__":
     with get_sparkSession(appName = 'huynhthuan') as spark:

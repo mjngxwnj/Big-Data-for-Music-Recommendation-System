@@ -1,18 +1,19 @@
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType, DateType, FloatType, BooleanType
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, ArrayType, DateType, FloatType
 
 """ Function for getting schemas. """
 def get_schema(table_name: str) -> StructType:
     """ Artist schema. """
-    artist_schema = [StructField('Artist_ID',    StringType(), True),
-                     StructField('Artist_Name',  StringType(), True),
-                     StructField('Genres',       ArrayType(StringType(), True), True),
-                     StructField('Followers',    IntegerType(), True),
-                     StructField('Popularity',   IntegerType(), True),
-                     StructField('Artist_Image', StringType(), True),
-                     StructField('Artist_Type',  StringType(), True),
-                     StructField('External_Url', StringType(), True),
-                     StructField('Href',         StringType(), True),
-                     StructField('Artist_Uri',   StringType(), True)]
+    artist_schema = [StructField('Artist_ID',      StringType(), True),
+                     StructField('Artist_Name',    StringType(), True),
+                     StructField('Genres',         ArrayType(StringType(), True), True),
+                     StructField('Followers',      IntegerType(), True),
+                     StructField('Popularity',     IntegerType(), True),
+                     StructField('Artist_Image',   StringType(), True),
+                     StructField('Artist_Type',    StringType(), True),
+                     StructField('External_Url',   StringType(), True),
+                     StructField('Href',           StringType(), True),
+                     StructField('Artist_Uri',     StringType(), True),
+                     StructField('Execution_date',  DateType(), True)]
     #applying struct type
     artist_schema = StructType(artist_schema)
     
@@ -34,12 +35,13 @@ def get_schema(table_name: str) -> StructType:
                     StructField('External_URL',         StringType(), True),
                     StructField('Href',                 StringType(), True),
                     StructField('Image',                StringType(), True),
-                    StructField('Uri',                  StringType(), True)]
+                    StructField('Uri',                  StringType(), True),
+                    StructField('Execution_date',        DateType(), True)]
     #Applying struct type
     album_schema = StructType(album_schema)
 
     """ Track schema. """
-    track_schema = [StructField("Artists",           StringType(), True),
+    track_schema = [StructField("Artists",          StringType(), True),
                     StructField("Album_ID",         StringType(), True),
                     StructField("Album_Name",       StringType(), True),
                     StructField("Track_ID",         StringType(), True),
@@ -55,7 +57,8 @@ def get_schema(table_name: str) -> StructType:
                     StructField("Restrictions",     StringType(), True),
                     StructField("Preview_url",      StringType(), True),
                     StructField("Uri",              StringType(), True),
-                    StructField("Is_Local",         StringType(), True)]
+                    StructField("Is_Local",         StringType(), True),
+                    StructField('Execution_date',   DateType(), True)]
     #Applying struct type
     track_schema = StructType(track_schema)
     
@@ -75,7 +78,8 @@ def get_schema(table_name: str) -> StructType:
                            StructField("Time_signature",   IntegerType(), True),
                            StructField("Track_href",       StringType(), True),
                            StructField("Type_Feature",     StringType(), True),
-                           StructField("Analysis_Url",     StringType(), True)]
+                           StructField("Analysis_Url",     StringType(), True),
+                           StructField('Execution_date',    DateType(), True)]
     #Applying struct type
     trackfeature_schema = StructType(trackfeature_schema)
 
