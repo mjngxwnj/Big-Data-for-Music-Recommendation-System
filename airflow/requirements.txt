@@ -3,3 +3,5 @@ apache-airflow-providers-snowflake
 pyspark==3.4.3
 pymongo==4.9.1
 pandas==2.2.1
+spotipy
+lxml
