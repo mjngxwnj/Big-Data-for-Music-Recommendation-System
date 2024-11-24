@@ -2,46 +2,42 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from spotipy.exceptions import SpotifyException
 import pandas as pd
-import os
-import requests
-import csv
-# Import necessary libraries
-# dfAlbumID = pd.read_csv('D:\\Study\\C++\\Source Code\\Python\\Project_Music_recommend\\mydata.csv')
-# album_file = 'D:\\Study\\C++\\Source Code\\Python\\Project_Music_recommend\\AlbumDatatmp.csv'
-# track_file = 'D:\\Study\\C++\\Source Code\\Python\\Project_Music_recommend\\TrackData.csv'
-# album_columns=['Artist','Artist_ID', 'Album_ID', 'Name', 'Type', 'Genres', 'Label', 'Popularity', 'Available_Markets',
-#                'Release_Date', 'ReleaseDatePrecision', 'TotalTracks', 'Copyrights', 'Restrictions', 'External_URL', 'Href', 'Image', 'Uri']
-# track_columns=['Artists','Album_ID','Album_Name','Track_ID', 'Name', 'Track_Number', 'Type', 'AvailableMarkets', 'Disc_Number', 
-#                'Duration_ms', 'Explicit', 'External_urls', 'Href', 'Restrictions', 'Preview_url', 
-#                'Uri', 'Is_Local']
-sp =spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='05e2ff0a21954615b11878a9eb038e7f'
-                                                          ,client_secret='7f2e7dc0bd0e41caa3665b5dea9ab8e0'))
-# def write_to_csv(file_path, data, columns):
-#     # Convert data into dataframe with specified columns
-#     df = pd.DataFrame(data, columns=columns)
-#     # Open the file in append mode ('a') and write data to it
-#     with open(file_path, 'a', newline='', encoding='utf-8') as f:
-#         # Write data with `header=False` flag if file already exists, write header only if file is empty
-#         df.to_csv(f, header=f.tell() == 0, index=False)
+from mongoDB.mongoDB_operations import *
 
 # Function to divide album list into small groups (chunks)
 def chunk_album_ids(album_ids,chunk_size=20):
     for i in range(0,len(album_ids),chunk_size):
         yield album_ids[i:i+chunk_size]
-
+        
 # Function to get album data from Spotify API
-def getAlbumData(album_ids): 
-    album_info =[]
-    track_info =[]
+def crawl_album_track(dfArtist: pd.DataFrame, Execution_date: str):
+
+    sp =spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='05e2ff0a21954615b11878a9eb038e7f'
+                                                          ,client_secret='7f2e7dc0bd0e41caa3665b5dea9ab8e0'))
+    
+    Album_Data =[]
+    Track_Data =[]
+    album_id_list = []
     i=1
+
+    for artist_id in dfArtist['Artist_ID']:
+        result = sp.artist_albums(artist_id=artist_id,album_type ='album') #Get information from spotify and save it to result
+        if result and result['items']:
+            for album in result['items']: # Browse through each album to save to the list
+                album_id_list.append(album['id']) # Add album information to the list
+                
+        else:
+            print(f"No albums found for artist ID: {artist_id}")
+
     #Split album list into chunks
-    for chunk in chunk_album_ids(album_ids):
+    for chunk in chunk_album_ids(album_id_list):
         print(str(i)+f" )Calling API for {len(chunk)} albums")
+        print(chunk)
         albums = sp.albums(chunk) # Get information about the albums from the API
         for album in albums['albums']:
             copyrights = album.get('copyrights', []) # Get information about the copyrights
-            copyrights_info = ', '.join([c['text'] for c in copyrights]) if copyrights else "No copyrights information" #If there is information, get the opposite information and return No information
-            album_info.append({ # Add album information to the list
+            copyrights_info = ', '.join([c['text'] for c in copyrights]) if copyrights else "No copyrights information"
+            Album_Data.append({ # Add album information to the list
                 'Artist':album['artists'][0]['name'],
                 'Artist_ID':album['artists'][0]['id'],
                 'Album_ID':album['id'],
@@ -62,7 +58,7 @@ def getAlbumData(album_ids):
                 'Uri': album.get('uri',None)
             })
             for track in album['tracks']['items']:
-                track_info.append({
+                Track_Data.append({
                     'Artists': ', '.join(artist['name'] for artist in track['artists']),  # Join the artists' names into a string
                     'Album_Name':album['name'],
                     'Album_ID':album['id'],
@@ -82,10 +78,18 @@ def getAlbumData(album_ids):
                     'Is_Local': track['is_local']
                 })
         i+=1
-    return album_info,track_info
+    Album_Data, Track_Data = pd.DataFrame(Album_Data), pd.DataFrame(Track_Data)
+    Album_Data['Execution_date'] = Execution_date
+    Track_Data['Execution_date'] = Execution_date
 
-albumIds = dfAlbumID['Album_ID'].tolist()  # Get the album IDs from the dataframe
-album_info, track_info = getAlbumData(albumIds)
+    return Album_Data, Track_Data
 
-print("Successful")
-                
+def load_daily_album_track_mongoDB(Execution_date: str):
+    with mongoDB_client(username = 'huynhthuan', password = 'password') as client:
+        client_operations = mongoDB_operations(client)
+        daily_artist_data = client_operations.read_data(database_name = 'music_database', collection_name = 'artist_collection', query = {'Execution_date': Execution_date})
+        daily_album_data, daily_track_data = crawl_album_track(daily_artist_data, Execution_date)
+        client_operations.insert_data(database_name = 'music_database', collection_name = 'album_collection', data = daily_album_data)
+        client_operations.insert_data(database_name = 'music_database', collection_name = 'track_collection', data = daily_track_data)
+
+        

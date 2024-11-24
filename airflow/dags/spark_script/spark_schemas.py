@@ -13,7 +13,7 @@ def get_schema(table_name: str) -> StructType:
                      StructField('External_Url',   StringType(), True),
                      StructField('Href',           StringType(), True),
                      StructField('Artist_Uri',     StringType(), True),
-                     StructField('Execution_date',  DateType(), True)]
+                     StructField('Execution_date', DateType(), True)]
     #applying struct type
     artist_schema = StructType(artist_schema)
     
@@ -25,7 +25,7 @@ def get_schema(table_name: str) -> StructType:
                     StructField('Type',                 StringType(), True),
                     StructField('Genres',               ArrayType(StringType(), True), True),
                     StructField('Label',                StringType(), True),
-                    StructField('Popularity',           StringType(), True),
+                    StructField('Popularity',           IntegerType(), True),
                     StructField('Available_Markets',    StringType(), True),
                     StructField('Release_Date',         DateType(), True),
                     StructField('ReleaseDatePrecision', StringType(), True),
@@ -36,7 +36,7 @@ def get_schema(table_name: str) -> StructType:
                     StructField('Href',                 StringType(), True),
                     StructField('Image',                StringType(), True),
                     StructField('Uri',                  StringType(), True),
-                    StructField('Execution_date',        DateType(), True)]
+                    StructField('Execution_date',       DateType(), True)]
     #Applying struct type
     album_schema = StructType(album_schema)
 
@@ -49,7 +49,7 @@ def get_schema(table_name: str) -> StructType:
                     StructField("Track_Number",     IntegerType(), True),
                     StructField("Type",             StringType(), True),
                     StructField("AvailableMarkets", StringType(), True),
-                    StructField("Disc_Number",      StringType(), True),
+                    StructField("Disc_Number",      IntegerType(), True),
                     StructField("Duration_ms",      IntegerType(), True),
                     StructField("Explicit",         StringType(), True),
                     StructField("External_urls",    StringType(), True),
@@ -58,7 +58,7 @@ def get_schema(table_name: str) -> StructType:
                     StructField("Preview_url",      StringType(), True),
                     StructField("Uri",              StringType(), True),
                     StructField("Is_Local",         StringType(), True),
-                    StructField('Execution_date',   DateType(), True)]
+                    StructField('Execution_date',   StringType(), True)]
     #Applying struct type
     track_schema = StructType(track_schema)
     
@@ -79,7 +79,7 @@ def get_schema(table_name: str) -> StructType:
                            StructField("Track_href",       StringType(), True),
                            StructField("Type_Feature",     StringType(), True),
                            StructField("Analysis_Url",     StringType(), True),
-                           StructField('Execution_date',    DateType(), True)]
+                           StructField('Execution_date',   StringType(), True)]
     #Applying struct type
     trackfeature_schema = StructType(trackfeature_schema)
 

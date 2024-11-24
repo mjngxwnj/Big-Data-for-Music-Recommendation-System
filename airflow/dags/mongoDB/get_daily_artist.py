@@ -27,10 +27,10 @@ def getArtistData(artistName):
     print(f"Can't find artist: {artistName}")
     return None,None #Trả về None nếu không có thông tin 
 
-def crawl_artist(dfArtist: pd.DataFrame, Execution_date: str):
+def crawl_artist(dfArtistName: pd.DataFrame, Execution_date: str):
     Artist_Data = [] 
     i=1
-    for artistName in dfArtist['Artist']: #Lặp từng nghệ sĩ trong danh sách
+    for artistName in dfArtistName['Artist']: #Lặp từng nghệ sĩ trong danh sách
         print(str(i)+")Loading Artist..."+ artistName)
         artistId,artistInfo = getArtistData(artistName) #Lấy thông tin từ hàm đã cài đặt
         if artistId and artistInfo:

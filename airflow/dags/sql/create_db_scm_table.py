@@ -14,7 +14,7 @@ create_spotify_music_schema = '''
 create_dim_genres = '''
     CREATE TABLE IF NOT EXISTS {{ params.table_name }} (
         id VARCHAR(20) PRIMARY KEY,
-        genres VARCHAR(100),
+        genres VARCHAR(200),
         execution_date DATE
     );
 '''
@@ -22,11 +22,11 @@ create_dim_genres = '''
 create_dim_artist = '''
     CREATE TABLE IF NOT EXISTS {{ params.table_name }} (
         id VARCHAR(30) PRIMARY KEY,
-        name VARCHAR(300),
+        name VARCHAR(400),
         followers INT,
         popularity INT,
-        link_image VARCHAR(100),
-        url VARCHAR(100),
+        link_image VARCHAR(200),
+        url VARCHAR(200),
         execution_date DATE
     );
 '''
@@ -44,14 +44,14 @@ create_dim_artist_genres = '''
 create_dim_album = '''
     CREATE TABLE IF NOT EXISTS {{ params.table_name }} (
         id VARCHAR(30) PRIMARY KEY,
-        name VARCHAR(300),
-        type VARCHAR(15),
-        label VARCHAR(300),
+        name VARCHAR(400),
+        type VARCHAR(100),
+        label VARCHAR(400),
         popularity INT,
         release_date DATE,
         copyrights TEXT,
-        url VARCHAR(100),
-        link_image VARCHAR(100),
+        url VARCHAR(200),
+        link_image VARCHAR(200),
         execution_date DATE
     );
 '''
@@ -80,13 +80,13 @@ create_fact_track = '''
         track_id VARCHAR(30),
         artist_id VARCHAR(30),
         album_id VARCHAR(30),
-        name VARCHAR(300),
+        name VARCHAR(400),
         track_number INT,
         disc_number INT,
         duration_ms INT,
         explicit VARCHAR(10),
-        url VARCHAR(100),
-        restriction VARCHAR(20),
+        url VARCHAR(200),
+        restriction VARCHAR(100),
         preview VARCHAR(200),
         execution_date DATE,
         FOREIGN KEY (track_id) REFERENCES SPOTIFY_MUSIC_DB.SPOTIFY_MUSIC_SCHEMA.dim_track_feature(id),

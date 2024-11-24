@@ -39,7 +39,7 @@ def get_sparkSession(appName: str, master: str = 'local'):
 
 
 """ Read data from mongoDB. """
-def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str, chunk_params: list = None,
+def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str, query: dict = None,
                  schema: StructType = None, username: str = 'huynhthuan', password: str = 'password', 
                  host: str = 'mongo', port: str = 27017) -> pyspark.sql.DataFrame:
     
@@ -47,8 +47,8 @@ def read_mongoDB(spark: SparkSession, database_name: str, collection_name: str, 
     if not isinstance(spark, SparkSession):
         raise TypeError("spark must be a SparkSession!")
     
-    if chunk_params is not None and not isinstance(chunk_params, list):
-        raise TypeError("chunk_params must be a dict!")
+    if query is not None and not isinstance(query, dict):
+        raise TypeError("query must be a dict!")
     
     if schema is not None and not isinstance(schema, StructType):
         raise TypeError("schema must be a StructType!")
@@ -94,7 +94,7 @@ def read_HDFS(spark: SparkSession, HDFS_dir: str, file_type: str) -> pyspark.sql
 
 
 """ Write data into HDFS. """
-def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, file_type: str):
+def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, file_type: str, partition: str):
     #check params
     if not isinstance(spark, SparkSession):
         raise TypeError("spark must be a SparkSession!")
@@ -110,10 +110,17 @@ def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, fi
     
     #write data
     try:
-        data.write.format(file_type) \
-                  .option('header', 'true') \
-                  .mode('append') \
-                  .save(HDFS_path)
+        if partition is not None:
+            data.write.format(file_type) \
+                      .option('header', 'true') \
+                      .mode('append') \
+                      .partitionBy('Execution_date') \
+                      .save(HDFS_path)
+        else:
+            data.write.format(file_type) \
+                      .option('header', 'true') \
+                      .mode('append') \
+                      .save(HDFS_path)
         
         print(f"Successfully uploaded '{table_name}' into HDFS.")
 

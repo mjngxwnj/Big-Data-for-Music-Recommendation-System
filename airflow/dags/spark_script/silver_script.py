@@ -1,11 +1,14 @@
 from spark_script.sparkIO_operations import *
 from silver_class import SilverLayer
 from pyspark.sql.functions import col, year
+import argparse
 
 """ Processing silver artist data. """
-def silver_artist_process(spark):
+def silver_artist_process(spark: SparkSession, Execution_date: str):
     #read bronze artist data
     bronze_artist = read_HDFS(spark, HDFS_dir = "bronze_data/bronze_artist", file_type = 'parquet')
+    bronze_artist = bronze_artist.filter(bronze_artist['Execution_date'] == Execution_date)
+
     #applying SilverLayer class 
     silver_artist = SilverLayer(data = bronze_artist, 
                                 drop_columns       = ['Artist_Type', 'Href', 'Artist_Uri'],
@@ -31,9 +34,11 @@ def silver_artist_process(spark):
 
 
 """ Processing silver album data. """
-def silver_album_process(spark):
+def silver_album_process(spark: SparkSession, Execution_date: str):
     #read bronze album data
     bronze_album = read_HDFS(spark, HDFS_dir = 'bronze_data/bronze_album', file_type = 'parquet')
+    bronze_album = bronze_album.filter(bronze_album['Execution_date'] == Execution_date)
+
     #applying Silver Layer class
     silver_album = SilverLayer(data = bronze_album,
                                drop_columns       = ['Genres', 'Available_Markets', 'Restrictions', 'Href','Uri'],
@@ -64,9 +69,11 @@ def silver_album_process(spark):
 
 
 """ Processing silver track data. """
-def silver_track_process(spark):
+def silver_track_process(spark: SparkSession, Execution_date: str):
     #read bronze track data
     bronze_track = read_HDFS(spark, HDFS_dir = 'bronze_data/bronze_track', file_type = 'parquet')
+    bronze_track = bronze_track.filter(bronze_track['Execution_date'] == Execution_date)
+
     #applying Silver Layer class
     silver_track = SilverLayer(data               = bronze_track,
                                drop_columns       = ['Artists', 'Type', 'AvailableMarkets', 'Href', 'Uri', 'Is_Local'],
@@ -94,9 +101,11 @@ def silver_track_process(spark):
 
 
 """ Processing silver track feature data. """
-def silver_track_feature_process(spark):
+def silver_track_feature_process(spark: SparkSession, Execution_date: str):
     #read silver track feature data
     bronze_track_feature = read_HDFS(spark, HDFS_dir = 'bronze_data/bronze_track_feature', file_type = 'parquet')
+    bronze_track_feature = bronze_track_feature.filter(bronze_track_feature['Execution_date'] == Execution_date)
+    
     #applying Silver Layer class
     silver_track_feature = SilverLayer(data              = bronze_track_feature,
                                        drop_columns      = ['Track_href', 'Type_Feature', 'Analysis_Url'],
@@ -125,14 +134,18 @@ def silver_track_feature_process(spark):
 
 #main call
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description = "Current date argument")
+    parser.add_argument('--execution_date', required = False, help = "execution_date")
+    args = parser.parse_args()
+
     with get_sparkSession("silver_task_spark") as spark:
         print("------------------------------- Silver task starts! -------------------------------")
         print("Starting silver artist data processing...")
-        silver_artist_process(spark)
+        silver_artist_process(spark, args.execution_date)
         print("Starting silver album data processing...")
-        silver_album_process(spark)
+        silver_album_process(spark, args.execution_date)
         print("Starting silver track data processing...")
-        silver_track_process(spark)
+        silver_track_process(spark, args.execution_date)
         print("Starting silver track feature data processing...")
-        silver_track_feature_process(spark)
+        silver_track_feature_process(spark, args.execution_date)
         print("------------------------------ Silver task finished! -------------------------------")
