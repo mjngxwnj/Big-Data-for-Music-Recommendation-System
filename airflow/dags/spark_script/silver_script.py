@@ -1,4 +1,4 @@
-from spark_script.sparkIO_operations import *
+from sparkIO_operations import *
 from silver_class import SilverLayer
 from pyspark.sql.functions import col, year
 import argparse
@@ -30,7 +30,8 @@ def silver_artist_process(spark: SparkSession, Execution_date: str):
     silver_artist = silver_artist.process()
     print("Finished processing for 'silver_artist'.")
     #load data into HDFS
-    write_HDFS(spark, data = silver_artist, direct = "silver_data/silver_artist", file_type = 'parquet')
+    write_HDFS(spark, data = silver_artist, direct = "silver_data/silver_artist", 
+               file_type = 'parquet', partition = 'Execution_date')
 
 
 """ Processing silver album data. """
@@ -65,7 +66,8 @@ def silver_album_process(spark: SparkSession, Execution_date: str):
     silver_album = silver_album.process()
     print("Finished processing for 'silver_album'.")
     #load data into HDFS
-    write_HDFS(spark, data = silver_album, direct = 'silver_data/silver_album', file_type = 'parquet')
+    write_HDFS(spark, data = silver_album, direct = 'silver_data/silver_album', 
+               file_type = 'parquet', partition = 'Execution_date')
 
 
 """ Processing silver track data. """
@@ -97,7 +99,8 @@ def silver_track_process(spark: SparkSession, Execution_date: str):
     silver_track = silver_track.process()
     print("Finished processing for 'silver_track'.")
     #load data into HDFS
-    write_HDFS(spark, data = silver_track, direct = 'silver_data/silver_track', file_type = 'parquet')
+    write_HDFS(spark, data = silver_track, direct = 'silver_data/silver_track', 
+               file_type = 'parquet', partition = 'Execution_date')
 
 
 """ Processing silver track feature data. """
@@ -129,7 +132,8 @@ def silver_track_feature_process(spark: SparkSession, Execution_date: str):
     silver_track_feature = silver_track_feature.process()
     print("Finished processing for 'silver_track_feature'.")
     #load data into HDFS
-    write_HDFS(spark, data = silver_track_feature, direct = 'silver_data/silver_track_feature', file_type = 'parquet')
+    write_HDFS(spark, data = silver_track_feature, direct = 'silver_data/silver_track_feature', 
+               file_type = 'parquet', partition = 'Execution_date')
 
 
 #main call
@@ -138,7 +142,7 @@ if __name__ == "__main__":
     parser.add_argument('--execution_date', required = False, help = "execution_date")
     args = parser.parse_args()
 
-    with get_sparkSession("silver_task_spark") as spark:
+    with get_sparkSession("Silver_task_spark") as spark:
         print("------------------------------- Silver task starts! -------------------------------")
         print("Starting silver artist data processing...")
         silver_artist_process(spark, args.execution_date)

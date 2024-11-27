@@ -16,13 +16,14 @@ import sql.create_db_scm_table
 default_args = {
     'owner': 'huynhthuan',
     'depends_on_past': False,
+    'start_date': datetime(2024, 11, 26)
 }
 
 def check_is_init_load():
     with mongoDB_client(username = 'huynhthuan', password = 'password') as client:
         client_operations = mongoDB_operations(client)
         if client_operations.check_database_exists(database_name = 'music_database'):
-            return "load_artist_name_mongo_task"
+            return "crawl_spotify_data_taskgroup.load_artist_name_mongo_task"
         else:
             return "initial_load_task"
         
@@ -31,11 +32,11 @@ with DAG(
     description = 'Extract, Transform, and Load Music Data for Analytics and Recommendation System',
     dag_id = 'Music_data_pipeline',
     default_args = default_args,
-    schedule_interval = None,
-    render_template_as_native_obj = True,
-    catchup = False
+    schedule_interval = "0 7 * * *",
+    render_template_as_native_obj = True
 ) as daily_dag:
-    Execution_date = "2024-11-25"
+    
+    Execution_date = datetime.now().strftime("%Y-%m-%d")
 
     branch_task = BranchPythonOperator(
         task_id = "branch_task",
@@ -114,7 +115,8 @@ with DAG(
                 "spark.executor.instances": '2',
                 "spark.sql.shuffle.partitions": '4',
                 "spark.jars.packages": "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0"
-            }
+            },
+            application_args = ['--execution_date', Execution_date]
         )
 
 
@@ -251,10 +253,7 @@ with DAG(
         application_args = ['--execution_date', Execution_date]
     )
 
-    [gold_layer_task, 
+    [gold_layer_task,
      create_snowflake_dim_genres_task, create_snowflake_dim_artist_task, \
      create_snowflake_dim_artist_genres_task, create_snowflake_dim_album_task, \
      create_snowflake_dim_track_feature_task, create_snowflake_fact_track_task] >> warehouse_load_task
-    
-
-

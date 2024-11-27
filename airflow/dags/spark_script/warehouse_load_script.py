@@ -12,7 +12,7 @@ def load_data_Snowflake(Execution_date: str):
         write_SnowFlake(spark, data = dim_genres, table_name = 'SPOTIFY_MUSIC_DB.SPOTIFY_MUSIC_SCHEMA.dim_genres')
 
         dim_artist_genres = read_HDFS(spark, HDFS_dir = 'gold_data/dim_artist_genres', file_type = 'parquet')
-        dim_artist_genres = dim_artist_genres.filter(dim_genres['Execution_date'] == Execution_date)
+        dim_artist_genres = dim_artist_genres.filter(dim_artist_genres['Execution_date'] == Execution_date)
         write_SnowFlake(spark, data = dim_artist_genres, table_name = 'SPOTIFY_MUSIC_DB.SPOTIFY_MUSIC_SCHEMA.dim_artist_genres')
 
         dim_album = read_HDFS(spark, HDFS_dir = 'gold_data/dim_album', file_type = 'parquet')

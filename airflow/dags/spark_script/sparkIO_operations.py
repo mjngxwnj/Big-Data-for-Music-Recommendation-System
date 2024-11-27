@@ -94,7 +94,7 @@ def read_HDFS(spark: SparkSession, HDFS_dir: str, file_type: str) -> pyspark.sql
 
 
 """ Write data into HDFS. """
-def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, file_type: str, partition: str):
+def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, file_type: str, partition: str = None):
     #check params
     if not isinstance(spark, SparkSession):
         raise TypeError("spark must be a SparkSession!")

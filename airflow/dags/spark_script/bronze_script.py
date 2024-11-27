@@ -4,9 +4,9 @@ from pyspark.sql.functions import split, col, get_json_object, to_date, regexp_r
 import argparse
 
 """ Applying schemas and loading data from MongoDB into HDFS."""
-def bronze_task(Execution_date: str):
+def bronze_layer_processing(Execution_date: str):
     #get spark Session
-    with get_sparkSession(appName = 'Bronze_task') as spark:
+    with get_sparkSession(appName = 'Bronze_task_spark') as spark:
         """------------------------ BRONZE ARTIST ------------------------"""
         artist_data = read_mongoDB(spark, database_name = 'music_database', collection_name = 'artist_collection')
         artist_data = artist_data.filter(artist_data['Execution_date'] == Execution_date)
@@ -85,5 +85,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print("------------------------------- Bronze task starts! -------------------------------")
-    bronze_task(args.execution_date)
+    bronze_layer_processing(args.execution_date)
     print("------------------------------ Bronze task finished! -------------------------------")
