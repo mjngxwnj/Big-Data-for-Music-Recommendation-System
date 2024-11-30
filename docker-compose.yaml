@@ -8,9 +8,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: huynhthuan
       MONGO_INITDB_ROOT_PASSWORD: password
-    # volumes:
-    #   - ./mongoDB:/mongoDB
-    #   - ./data:/data
     ports:
       - 27017:27017
     networks:
@@ -61,7 +58,6 @@ services:
   airflow:
     build:
       context: ./airflow
-      dockerfile: dockerfile
     container_name: airflow
     volumes:
       - ./airflow/dags:/opt/airflow/dags
@@ -88,9 +84,7 @@ services:
   notebook:
     build: 
       context: ./notebook
-      dockerfile: dockerfile
     container_name: notebook
-    mem_limit: 4g
     volumes:
       - ./notebook:/home/jovyan/work
       - ./data:/opt/data
@@ -100,6 +94,18 @@ services:
     networks:
       - data_network
   
+  #streamlit application
+  streamlit_app:
+    build:
+      context: ./application
+    container_name: streamlit_application
+    volumes:
+      - ./application:/app
+    ports: 
+      - 8501:8501
+    networks:
+      - data_network
+      
   #Networks
 networks:
   data_network:

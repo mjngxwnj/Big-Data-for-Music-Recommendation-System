@@ -16,7 +16,7 @@ import sql.create_db_scm_table
 default_args = {
     'owner': 'huynhthuan',
     'depends_on_past': False,
-    'start_date': datetime(2024, 11, 26)
+    'start_date': datetime(2024, 11, 28)
 }
 
 def check_is_init_load():
@@ -32,7 +32,7 @@ with DAG(
     description = 'Extract, Transform, and Load Music Data for Analytics and Recommendation System',
     dag_id = 'Music_data_pipeline',
     default_args = default_args,
-    schedule_interval = "0 7 * * *",
+    schedule_interval='@daily',
     render_template_as_native_obj = True
 ) as daily_dag:
     
@@ -50,6 +50,7 @@ with DAG(
         application = '/opt/airflow/dags/init_load.py',
         name = 'upload_initial_csv_file',
         conf={
+            'spark.master': 'local',
             'spark.executor.memory': '2g',
             'spark.executor.cores': '2',
             'spark.executor.instances': '2',
@@ -79,12 +80,6 @@ with DAG(
             op_kwargs = {'Execution_date': Execution_date}
         )
 
-        load_track_feature_mongo_task = PythonOperator(
-            task_id = "load_track_feature_mongo_task",
-            python_callable = load_daily_track_feature_mongoDB,
-            op_kwargs = {'Execution_date': Execution_date}
-        )
-
     with TaskGroup(group_id = 'ETL_HDFS_taskgroup') as tg_etl_hdfs_taskgroup: 
         """ Run the Bronze layer task. """
         bronze_layer_task = SparkSubmitOperator(
@@ -94,6 +89,7 @@ with DAG(
             application = '/opt/airflow/dags/spark_script/bronze_script.py',
             name = 'bronze_layer_processing_script',
             conf={
+                'spark.master': 'local',
                 'spark.executor.memory': '2g',
                 'spark.executor.cores': '2',
                 'spark.executor.instances': '2',
@@ -110,11 +106,11 @@ with DAG(
             application = '/opt/airflow/dags/spark_script/silver_script.py',
             name = 'silver_layer_processing_script',
             conf={
+                "spark.master": 'local',
                 "spark.executor.memory": '2g',
                 "spark.executor.cores": '2',
                 "spark.executor.instances": '2',
                 "spark.sql.shuffle.partitions": '4',
-                "spark.jars.packages": "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0"
             },
             application_args = ['--execution_date', Execution_date]
         )
@@ -127,11 +123,11 @@ with DAG(
             application = '/opt/airflow/dags/spark_script/gold_script.py',
             name = 'silver_layer_processing_script',
             conf={
+                "spark.master": 'local',
                 "spark.executor.memory": '2g',
                 "spark.executor.cores": '2',
                 "spark.executor.instances": '2',
                 "spark.sql.shuffle.partitions": '4',
-                "spark.jars.packages": "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0"
             },
             application_args = ['--execution_date', Execution_date]
         )
@@ -140,8 +136,7 @@ with DAG(
     branch_task >> initial_load_task >> bronze_layer_task
 
     branch_task >> load_artist_name_mongo_task >> load_artist_mongo_task \
-                >> load_album_track_mongo_task >> load_track_feature_mongo_task \
-                >> bronze_layer_task
+               >> load_album_track_mongo_task >> bronze_layer_task
     
     bronze_layer_task >> silver_layer_task >> gold_layer_task
 
@@ -243,12 +238,12 @@ with DAG(
         conn_id = "spark_default",
         application = '/opt/airflow/dags/spark_script/warehouse_load_script.py',
         name = 'load_data_into_warehouse_script',
+        jars = '/opt/jars/snowflake-jdbc-3.19.0.jar,/opt/jars/spark-snowflake_2.12-2.12.0-spark_3.4.jar',  
         conf={
             "spark.executor.memory": '2g',
             "spark.executor.cores": '2',
             "spark.executor.instances": '2',
-            "spark.sql.shuffle.partitions": '4',
-            "spark.jars.packages": "net.snowflake:spark-snowflake_2.12:2.12.0-spark_3.4"
+            "spark.sql.shuffle.partitions": '4'
         },
         application_args = ['--execution_date', Execution_date]
     )

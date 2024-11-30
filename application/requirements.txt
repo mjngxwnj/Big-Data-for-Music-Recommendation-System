@@ -1,0 +1,5 @@
+streamlit
+pyspark==3.4.3
+matplotlib
+seaborn
+snowflake-connector-python

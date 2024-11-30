@@ -39,7 +39,6 @@ def silver_album_process(spark: SparkSession, Execution_date: str):
     #read bronze album data
     bronze_album = read_HDFS(spark, HDFS_dir = 'bronze_data/bronze_album', file_type = 'parquet')
     bronze_album = bronze_album.filter(bronze_album['Execution_date'] == Execution_date)
-
     #applying Silver Layer class
     silver_album = SilverLayer(data = bronze_album,
                                drop_columns       = ['Genres', 'Available_Markets', 'Restrictions', 'Href','Uri'],
@@ -75,7 +74,6 @@ def silver_track_process(spark: SparkSession, Execution_date: str):
     #read bronze track data
     bronze_track = read_HDFS(spark, HDFS_dir = 'bronze_data/bronze_track', file_type = 'parquet')
     bronze_track = bronze_track.filter(bronze_track['Execution_date'] == Execution_date)
-
     #applying Silver Layer class
     silver_track = SilverLayer(data               = bronze_track,
                                drop_columns       = ['Artists', 'Type', 'AvailableMarkets', 'Href', 'Uri', 'Is_Local'],
@@ -108,7 +106,6 @@ def silver_track_feature_process(spark: SparkSession, Execution_date: str):
     #read silver track feature data
     bronze_track_feature = read_HDFS(spark, HDFS_dir = 'bronze_data/bronze_track_feature', file_type = 'parquet')
     bronze_track_feature = bronze_track_feature.filter(bronze_track_feature['Execution_date'] == Execution_date)
-    
     #applying Silver Layer class
     silver_track_feature = SilverLayer(data              = bronze_track_feature,
                                        drop_columns      = ['Track_href', 'Type_Feature', 'Analysis_Url'],

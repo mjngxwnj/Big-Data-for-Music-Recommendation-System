@@ -8,31 +8,45 @@ def gold_layer_processing(Execution_date: str):
     with get_sparkSession('Gold_task_spark') as spark:
         #Read data from HDFS
         silver_artist = read_HDFS(spark, HDFS_dir = 'silver_data/silver_artist', file_type = 'parquet')
-        silver_artist = silver_artist.filter(silver_artist['Execution_date'] == Execution_date)
-        
+        silver_artist.cache()
+
         silver_album = read_HDFS(spark, HDFS_dir = 'silver_data/silver_album', file_type = 'parquet')
         silver_album = silver_album.filter(silver_album['Execution_date'] == Execution_date)
+        silver_album.cache()
 
         silver_track = read_HDFS(spark, HDFS_dir = 'silver_data/silver_track', file_type = 'parquet')
         silver_track = silver_track.filter(silver_track['Execution_date'] == Execution_date)
+        silver_track.cache()
 
         silver_track_feature = read_HDFS(spark, HDFS_dir = 'silver_data/silver_track_feature', file_type = 'parquet')
         silver_track_feature = silver_track_feature.filter(silver_track_feature['Execution_date'] == Execution_date)
+        silver_track_feature.cache()
 
 
         """ Create dim_genres table. """
         #list all distinct genres in artist table
-        dim_genres = silver_artist.select('genres', 'Execution_date').distinct()
+        old_genres = silver_artist.filter(silver_artist['Execution_date'] != Execution_date) \
+                                  .select('genres') \
+                                  .withColumnRenamed('genres', 'old_genres') \
+
+        new_genres = silver_artist.filter(silver_artist['Execution_date'] == Execution_date) \
+                                  .select('genres', 'Execution_date') 
+                                  
+        new_genres = new_genres.join(old_genres, on = new_genres['genres'] == old_genres['old_genres'], how = 'left_anti')
+
+        dim_genres = new_genres.select('genres', 'Execution_date').distinct()
         dim_genres = dim_genres.filter(col('genres').isNotNull())
         #add primary key
         dim_genres = dim_genres.withColumn("id", monotonically_increasing_id()) \
-                                .withColumn("id", concat(lit(Execution_date.replace("-", "")), col('id')))
+                               .withColumn("id", concat(lit(Execution_date.replace("-", "")), col('id')))
         #reorder columns
         dim_genres = dim_genres.select("id", "genres", "Execution_date")
         #load data into HDFS
         write_HDFS(spark, data = dim_genres, direct = 'gold_data/dim_genres', 
                    file_type = 'parquet', partition = 'Execution_date')
 
+
+        silver_artist = silver_artist.filter(silver_artist['Execution_date'] == Execution_date)
 
         """ Create dim_artist table. """
         #just drop genres column and distinct row
@@ -42,12 +56,13 @@ def gold_layer_processing(Execution_date: str):
 
 
         """ Create dim_artist_genres table. """
-        #select necessary columns in artist table
+        #select necessary columns in artist tables
         dim_artist_genres = silver_artist.select('id', 'genres') \
                                             .withColumnRenamed('id', 'artist_id')
         #joining tables to map artist IDs and genre IDs
+        dim_genres = read_HDFS(spark, HDFS_dir = 'gold_data/dim_genres', file_type = 'parquet')
         dim_artist_genres = dim_artist_genres.join(dim_genres, on = 'genres', how = 'inner') \
-                                                .withColumnRenamed('id', 'genres_id')
+                                             .withColumnRenamed('id', 'genres_id')
         #drop genres column
         dim_artist_genres = dim_artist_genres.drop('genres')
         #load data into HDFS

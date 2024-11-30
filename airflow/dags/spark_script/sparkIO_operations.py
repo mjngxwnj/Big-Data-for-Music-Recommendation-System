@@ -22,7 +22,6 @@ def get_sparkSession(appName: str, master: str = 'local'):
                .set("spark.jars.packages", "org.mongodb.spark:mongo-spark-connector_2.12:10.4.0") \
                .set("spark.jars.packages", "net.snowflake:spark-snowflake_2.12:2.12.0-spark_3.4")
     
-    #               .set("spark.executor.instances", "2") \
     #create Spark Session
     spark = SparkSession.builder.config(conf = conf).getOrCreate()
 
@@ -94,7 +93,8 @@ def read_HDFS(spark: SparkSession, HDFS_dir: str, file_type: str) -> pyspark.sql
 
 
 """ Write data into HDFS. """
-def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, file_type: str, partition: str = None):
+def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, 
+               file_type: str, mode: str = 'append', partition: str = None):
     #check params
     if not isinstance(spark, SparkSession):
         raise TypeError("spark must be a SparkSession!")
@@ -113,13 +113,13 @@ def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, fi
         if partition is not None:
             data.write.format(file_type) \
                       .option('header', 'true') \
-                      .mode('append') \
+                      .mode(mode) \
                       .partitionBy('Execution_date') \
                       .save(HDFS_path)
         else:
             data.write.format(file_type) \
                       .option('header', 'true') \
-                      .mode('append') \
+                      .mode(mode) \
                       .save(HDFS_path)
         
         print(f"Successfully uploaded '{table_name}' into HDFS.")

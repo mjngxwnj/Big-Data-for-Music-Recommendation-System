@@ -40,9 +40,10 @@ def bronze_layer_processing(Execution_date: str):
         print("Starting bronze preprocessing for album data...")
         try:
             album_data = album_data.withColumn('Popularity', col('Popularity').cast('int')) \
-                                .withColumn('Release_Date', to_date('Release_Date', "MM/dd/yyyy")) \
-                                .withColumn('TotalTracks', col('TotalTracks').cast('int')) \
-                                .withColumn('Execution_date', col('Execution_date').cast('date'))
+                                   .withColumn('Genres', split(col('Genres'), ",")) \
+                                   .withColumn('Release_Date', to_date('Release_Date', "MM/dd/yyyy")) \
+                                   .withColumn('TotalTracks', col('TotalTracks').cast('int')) \
+                                   .withColumn('Execution_date', col('Execution_date').cast('date'))
             #reorder columns after reading
             album_data = album_data.select('Artist', 'Artist_ID', 'Album_ID', 'Name', 'Type', 'Genres', 
                                         'Label', 'Popularity', 'Available_Markets', 'Release_Date', 

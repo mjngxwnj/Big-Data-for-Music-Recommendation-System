@@ -20,8 +20,13 @@ def crawl_track_feature(dfTrack: pd.DataFrame, Execution_date: str):
     track_ids = dfTrack['Track_ID'].tolist()
     # Split track id list into chunks of 100
     for chunk in chunk_track_ids(track_ids):
+        print(chunk)
         print(str(i)+f" )Calling API for {len(chunk)} tracks")
-        tracks = sp.audio_features(chunk) # Get information about multiple tracks
+        try:
+            tracks = sp.audio_features(chunk) # Get information about multiple tracks
+        except Exception as e:
+            return None
+        
         if tracks:
             for track,track_id in zip(tracks or [],chunk):
                 if track:
