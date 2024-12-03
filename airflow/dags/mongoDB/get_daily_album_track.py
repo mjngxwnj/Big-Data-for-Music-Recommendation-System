@@ -12,16 +12,16 @@ def chunk_album_ids(album_ids,chunk_size=20):
 # Function to get album data from Spotify API
 def crawl_album_track(dfArtist: pd.DataFrame, Execution_date: str):
 
-    sp =spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='05e2ff0a21954615b11878a9eb038e7f'
-                                                          ,client_secret='7f2e7dc0bd0e41caa3665b5dea9ab8e0'))
+    sp =spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='1c7d0aa2f79f40738f056ea7a28af970'
+                                                          ,client_secret='1ff9dbf85639452fb46fcb8c8c2c3e20'))
     
     Album_Data =[]
     Track_Data =[]
     album_id_list = []
     i=1
-
     for artist_id in dfArtist['Artist_ID']:
         result = sp.artist_albums(artist_id=artist_id,album_type ='album') #Get information from spotify and save it to result
+        print("CHECKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
         if result and result['items']:
             for album in result['items']: # Browse through each album to save to the list
                 album_id_list.append(album['id']) # Add album information to the list

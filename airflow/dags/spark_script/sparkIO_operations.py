@@ -94,7 +94,7 @@ def read_HDFS(spark: SparkSession, HDFS_dir: str, file_type: str) -> pyspark.sql
 
 """ Write data into HDFS. """
 def write_HDFS(spark: SparkSession, data: pyspark.sql.DataFrame, direct: str, 
-               file_type: str, mode: str = 'append', partition: str = None):
+               file_type: str, mode: str = 'overwrite', partition: str = None):
     #check params
     if not isinstance(spark, SparkSession):
         raise TypeError("spark must be a SparkSession!")
@@ -149,7 +149,7 @@ def write_SnowFlake(spark: SparkSession, data: pyspark.sql.DataFrame, table_name
         data.write.format("snowflake") \
                 .options(**snowflake_connection_options) \
                 .option("dbtable", table_name) \
-                .mode('append') \
+                .mode('overwrite') \
                 .save()
         print(f"Successfully uploaded '{table_name}' into SnowFlake.")
     except Exception as e:

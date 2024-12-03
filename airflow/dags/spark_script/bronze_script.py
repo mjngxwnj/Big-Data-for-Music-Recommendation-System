@@ -30,7 +30,7 @@ def bronze_layer_processing(Execution_date: str):
 
             #upload data into HDFS
             write_HDFS(spark, data = artist_data, direct = 'bronze_data/bronze_artist', 
-                       file_type = 'parquet', partition = 'Execution_date')
+                       file_type = 'parquet', mode = "append", partition = 'Execution_date')
         except Exception as e:
             print(f"An error occurred while preprocessing bronze data: {e}")
 
@@ -53,7 +53,7 @@ def bronze_layer_processing(Execution_date: str):
             print("Finished bronze preprocessing for album data.")
             #upload data into HDFS
             write_HDFS(spark, data = album_data, direct = 'bronze_data/bronze_album', 
-                       file_type = 'parquet', partition = 'Execution_date')
+                       file_type = 'parquet', mode = "append", partition = 'Execution_date')
         except Exception as e:
             print(f"An error occurred while preprocessing bronze data: {e}")
 
@@ -66,7 +66,7 @@ def bronze_layer_processing(Execution_date: str):
 
         #upload data into HDFS
         write_HDFS(spark, data = track_data, direct = 'bronze_data/bronze_track', 
-                   file_type = 'parquet', partition = 'Execution_date')
+                   file_type = 'parquet', mode = "append", partition = 'Execution_date')
 
 
         """------------------------ BRONZE TRACK FEATURE ------------------------"""
@@ -77,7 +77,7 @@ def bronze_layer_processing(Execution_date: str):
         
         #upload data into HDFS
         write_HDFS(spark, data = track_feature_data, direct = 'bronze_data/bronze_track_feature', 
-                   file_type = 'parquet', partition = 'Execution_date')
+                   file_type = 'parquet', mode = "append", partition = 'Execution_date')
 
 
 if __name__ == "__main__":

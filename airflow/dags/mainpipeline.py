@@ -33,7 +33,8 @@ with DAG(
     dag_id = 'Music_data_pipeline',
     default_args = default_args,
     schedule_interval='@daily',
-    render_template_as_native_obj = True
+    render_template_as_native_obj = True,
+    catchup = False
 ) as daily_dag:
     
     Execution_date = datetime.now().strftime("%Y-%m-%d")
@@ -112,7 +113,6 @@ with DAG(
                 "spark.executor.instances": '2',
                 "spark.sql.shuffle.partitions": '4',
             },
-            application_args = ['--execution_date', Execution_date]
         )
 
 
@@ -129,7 +129,6 @@ with DAG(
                 "spark.executor.instances": '2',
                 "spark.sql.shuffle.partitions": '4',
             },
-            application_args = ['--execution_date', Execution_date]
         )
 
 
@@ -244,11 +243,11 @@ with DAG(
             "spark.executor.cores": '2',
             "spark.executor.instances": '2',
             "spark.sql.shuffle.partitions": '4'
-        },
-        application_args = ['--execution_date', Execution_date]
+        }
     )
 
     [gold_layer_task,
      create_snowflake_dim_genres_task, create_snowflake_dim_artist_task, \
      create_snowflake_dim_artist_genres_task, create_snowflake_dim_album_task, \
      create_snowflake_dim_track_feature_task, create_snowflake_fact_track_task] >> warehouse_load_task
+    

@@ -11,8 +11,8 @@ def chunk_track_ids(track_ids,chunk_size=100):
 
 def crawl_track_feature(dfTrack: pd.DataFrame, Execution_date: str): 
 
-    sp =spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='5036da07445c484eafb112ed83c0f03a'
-                                                          ,client_secret='3da98e03edf442148da0f481b2cbc007'))
+    sp =spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='1c7d0aa2f79f40738f056ea7a28af970'
+                                                          ,client_secret='1ff9dbf85639452fb46fcb8c8c2c3e20'))
     
     Track_Feature_Data =[]
     i=1

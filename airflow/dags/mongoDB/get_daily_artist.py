@@ -5,8 +5,8 @@ import pandas as pd
 from mongoDB.mongoDB_operations import *
 
 def getArtistData(artistName):
-    sp =spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='48359fbc41d14367bb76ad67e4508f8e'
-                                                          ,client_secret='17b9ae9f31f44b82a7ce223e15c863bf'))
+    sp =spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id='1c7d0aa2f79f40738f056ea7a28af970'
+                                                          ,client_secret='1ff9dbf85639452fb46fcb8c8c2c3e20'))
     
     result = sp.search(q='artist:' + artistName, type='artist') #Sử dụng biến api_call để lưu lại hàm lambda với lời gọi api tương ứng
     if result and result['artists']['items']:  # Kiểm tra nếu tìm thấy nghệ sĩ
