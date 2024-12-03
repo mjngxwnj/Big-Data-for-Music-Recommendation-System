@@ -21,3 +21,7 @@
 ![My Image](Architecture.png)
 - **Link**: To explore the full source code, feel free to check out our GitHub repository:  
 *https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System*
+
+## 2. Data Collection and Ingestion  
+### 2.1 Web Scraping and API Data Fetching  
+To be continued ...
