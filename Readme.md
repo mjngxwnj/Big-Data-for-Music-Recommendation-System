@@ -18,7 +18,7 @@
     - **Airflow**: A framework that uses Python to schedule and run tasks.
 
 - **Architecture**:    
-![My Image](Architecture.png)
+![My Image](./images/Architecture.png)
 - **Link**: To explore the full source code, feel free to check out our GitHub repository:  
 *https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System*
 
