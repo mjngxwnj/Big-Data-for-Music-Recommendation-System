@@ -21,7 +21,6 @@ def crawl_album_track(dfArtist: pd.DataFrame, Execution_date: str):
     i=1
     for artist_id in dfArtist['Artist_ID']:
         result = sp.artist_albums(artist_id=artist_id,album_type ='album') #Get information from spotify and save it to result
-        print("CHECKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
         if result and result['items']:
             for album in result['items']: # Browse through each album to save to the list
                 album_id_list.append(album['id']) # Add album information to the list
