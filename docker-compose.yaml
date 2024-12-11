@@ -57,12 +57,12 @@ services:
   #Airflow
   airflow:
     build:
-      context: ./airflow
+      context: ./pipelines
     container_name: airflow
     volumes:
-      - ./airflow/dags:/opt/airflow/dags
-      - ./airflow/dags/spark_script:/opt/airflow/dags/spark_script
-      - ./airflow/dags/mongoDB:/opt/airflow/dags/mongoDB
+      - ./pipelines/dags:/opt/airflow/dags
+      - ./pipelines/dags/spark_script:/opt/airflow/dags/spark_script
+      - ./pipelines/dags/mongoDB:/opt/airflow/dags/mongoDB
       - ./data:/opt/data
       - ./jars:/opt/jars
     ports:

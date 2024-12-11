@@ -11,7 +11,14 @@ class Streamlit_UI():
     def display_main_UI(self):
         st.title("🎶 Welcome to Music Recommendation App! 🎶")
         st.subheader("Discover your favorite songs and artists here!")
-        
+        song_name = st.text_input("Search")
+        if song_name:
+            songs = search_rcm_bcf(song_name)
+            for song in songs:
+                st.image(song['link_image'])
+                st.write(song['artist_name'])
+                st.audio(song['preview'])
+                
         if st.sidebar.button("Search", use_container_width = True):
             st.session_state.search = {}
             st.rerun()
