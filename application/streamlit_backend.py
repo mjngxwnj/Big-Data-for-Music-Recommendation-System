@@ -75,7 +75,7 @@ def search_rcm_bcf(song_name: str):
 
 
 
-class BackEnd():
+class BackEnd(): 
     def __init__(self):
         #for snowflake config
         self.snowflake_config_rcm_mood = {
@@ -96,15 +96,18 @@ class BackEnd():
         }
 
         #for spark session
-        HDFS_RCM_CBF_PATH = "hdfs://namenode:9000/datalake/models/rcm_bcf_model/"
+        self.HDFS_RCM_CBF_PATH = "hdfs://namenode:9000/datalake/models/rcm_bcf_model/"
         conf = SparkConf()
         conf = conf.setAppName("model_spark") \
-                .setMaster("local") \
-                .set("spark.executor.memory", "4g") \
-                .set("spark.executor.cores", "2")
-        self.spark = SparkSession.builder.config(conf = conf).getOrCreate()
-        self.data = self.spark.read.format('parquet').option('header', 'true').load(HDFS_RCM_CBF_PATH)
-        self.data.cache()
+                   .setMaster("local") \
+                   .set("spark.executor.memory", "4g") \
+                   .set("spark.executor.cores", "2")
+        if "spark" not in st.session_state:
+            st.session_state.spark = SparkSession.builder.config(conf = conf).getOrCreate()
 
 
-    # def rea
+        self.spark = st.session_state.spark
+    
+    @st.cache_data
+    def get_rcm_bcf_dataset(self):
+        return self.spark.read.format('parquet').option('header', 'true').load(self.HDFS_RCM_CBF_PATH)
