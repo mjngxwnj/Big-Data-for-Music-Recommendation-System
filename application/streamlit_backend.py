@@ -53,6 +53,7 @@ class BackEnd:
         self._conn_rcm_db = st.session_state.conn_rcm_db
         self._spark = st.session_state.spark
         self._rcm_bcf_data = st.session_state.rcm_bcf_data
+        self._rcm_bcf_data.cache()
 
         atexit.register(self.clean)
 

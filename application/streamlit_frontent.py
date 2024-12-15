@@ -10,6 +10,9 @@ from io import BytesIO
 
 class Streamlit_UI():
     def __init__(self):
+
+        self._backend = BackEnd()
+
         if "main" not in st.session_state:
             st.session_state.main = None
     
@@ -169,17 +172,17 @@ class Streamlit_UI():
     def search_page(self):
         song_name = st.text_input("Search a song:")
         if song_name:
-            data = search_track_Snowflake(song_name)
+            data = self._backend.read_music_db(song_name)
             if data.empty:
                 st.markdown("No songs found!")
             else:
                 st.write("### Search results: ")
                 for _ , song in data.iterrows():
                     if(st.button(f"{song.TRACK_NAME} - {song.ARTIST_NAME}", key = song.TRACK_ID)):
-                        st.session_state.search['selected_song'] = song.to_dict()
+                        st.session_state.search_page['selected_song'] = song.to_dict()
                         st.rerun()
         if st.button("Back"):
-            del st.session_state.search
+            del st.session_state.search_page
             st.rerun()
 
     def display_search(self):
@@ -280,7 +283,7 @@ class Streamlit_UI():
 
     #======================================== Generate application ========================================
     def generate_application(self):
-        if "search" in st.session_state:
+        if "search_page" in st.session_state:
             if "selected_song" in st.session_state.search:
                 self.display_search()
             else:
