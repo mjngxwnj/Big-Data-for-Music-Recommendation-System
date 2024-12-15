@@ -74,9 +74,15 @@ class BackEnd:
                     ORDER BY FOLLOWERS DESC; 
                 """
         cursor.execute(query)
-        songs = cursor.fetch_pandas_all()
-        cursor.close()
+        rows = [dict(row) for row in cursor]
+        unique_names = set()
+        songs = []
+        for row in rows:
+            if row['TRACK_NAME'] not in unique_names:
+                songs.append(row)
+                unique_names.add(row['TRACK_NAME'])
         return songs
+    
     def rcm_songs_by_album(self, album_id):
         cursor = self._conn_music_db.cursor()
         query = f"""
@@ -88,7 +94,13 @@ class BackEnd:
                     ORDER BY RANDOM() LIMIT 10;
                 """
         cursor.execute(query)
-        songs = [dict(row) for row in cursor]
+        rows = [dict(row) for row in cursor]
+        unique_names = set()
+        songs = []
+        for row in rows:
+            if row['TRACK_NAME'] not in unique_names:
+                songs.append(row)
+                unique_names.add(row['TRACK_NAME'])
         return songs
     
     def rcm_songs_by_cbf(self, track_id: str, album_id: str):
@@ -99,7 +111,7 @@ class BackEnd:
         
         track_list.cache()
         track = track_list.first()
-        input_song_name, input_features = track['name'], track['normalized_features']
+        input_song_name, input_features = track['name'], track['combined_features']
 
         genres_list = track_list.select("genres").rdd.flatMap(lambda x: x).filter(lambda genres: genres != "").collect()
         filtered_songs = df.filter(df['genres'].isin(genres_list))
@@ -112,10 +124,11 @@ class BackEnd:
             return dot_product / (norm_v1 * norm_v2)
 
         cosine_similarity_udf = udf(lambda x: cosine_similarity(x, input_features), FloatType())
-        top_recommendations = filtered_songs.withColumn("similarity_scores", cosine_similarity_udf(filtered_songs['normalized_features'])) \
+        top_recommendations = filtered_songs.withColumn("similarity_scores", cosine_similarity_udf(filtered_songs['combined_features'])) \
                                             .orderBy("similarity_scores", ascending= False).limit(10) \
                                             .select("artist_name", "followers", "name", "similarity_scores", 
                                                      "track_id", "link_image", "url", "preview") \
+                                            .dropDuplicates(["name", "artist_name"]) \
                                             .collect()
         songs = []
         for song in top_recommendations:
@@ -126,95 +139,8 @@ class BackEnd:
                             'TRACK_NAME': song['name'],
                             'PREVIEW': song['preview']})
         return songs
-    
 
-
-
-
-
-
-# def search_track_Snowflake(song_name):   
-#     conn = snowflake.connector.connect(**snowflake_config)
-#     query = f"""SELECT DIM_ARTIST.NAME ARTIST_NAME, FACT_TRACK.URL URL, 
-#     FOLLOWERS, TRACK_ID, FACT_TRACK.NAME TRACK_NAME, PREVIEW, LINK_IMAGE
-#     FROM DIM_ARTIST JOIN FACT_TRACK 
-#     ON DIM_ARTIST.ID = FACT_TRACK.ARTIST_ID
-#     WHERE FACT_TRACK.NAME ILIKE '{song_name}%'
-#     ORDER BY FOLLOWERS DESC;
-#     """
-#     cursor = conn.cursor()
-#     cursor.execute(query)
-#     data = cursor.fetch_pandas_all()
-#     cursor.close()
-#     conn.close()
-
-#     return data
-
-# def search_rcm_mood_genres(mood: str, genres: str):
-#     conn = snowflake.connector.connect(**snowflake_config)
-
-#     query = f"""
-#     SELECT * FROM RCM_MOOD_GENRES_TABLE
-#     WHERE GENRES = '{genres}' AND MOOD = '{mood}'
-#     LIMIT 10;
-#     """
-
-#     cursor = conn.cursor()
-#     cursor.execute(query)
-#     data = cursor.fetch_pandas_all()
-#     cursor.close()
-#     conn.close()
-
-#     return data
-
-
-# def search_rcm_bcf(song_name: str): 
-#     spark = SparkSession.builder.config(conf = conf).getOrCreate()
-#     HDFS_PATH = "hdfs://namenode:9000/datalake/models/rcm_bcf_model/"
-#     data = spark.read.format('parquet').option('header', 'true').load(HDFS_PATH)
-#     data.cache()
-
-#     data.createOrReplaceTempView("songs")
-#     query = f""" SELECT * FROM songs WHERE LOWER(name) LIKE LOWER('{song_name}%') """ 
-#     songs = spark.sql(query)
-
-#     song_list = []
-#     songs = songs.rdd.map(lambda row: row.asDict()).collect()
-
-#     for row in songs:
-#         song_list.append({'artist_name': row['artist_name'],
-#                           'followers': row['followers'],
-#                           'link_image': row['link_image'],
-#                           'url': row['url'],
-#                           'name': row['name'],
-#                           'preview': row['preview']})
-
-#     return song_list
-
-
-
-
-
-#     """ ============================================== CACHE DATA ============================================== """
-#     @st.cache_resource
-#     def get_conn_music_db(_self):
-#         conn = snowflake.connector.connect(**_self._snowflake_config_music_db)
-#         return conn.cursor()
-    
-#     @st.cache_resource
-#     def get_conn_rcm_db(_self):
-#         conn = snowflake.connector.connect(**_self._snowflake_config_rcm_db)
-#         return conn.cursor()
-
-#     @st.cache_data
-#     def get_rcm_bcf_dataset(_self):
-#         song_list = []
-#         songs = _self._spark.read.format('parquet').option('header', 'true').load(_self._HDFS_RCM_CBF_PATH).limit(10).collect()
-#         for row in songs:
-#             song_list.append({'artist_name': row['artist_name'],
-#                             'followers': row['followers'],
-#                             'link_image': row['link_image'],
-#                             'url': row['url'],
-#                             'name': row['name'],
-#                             'preview': row['preview']})
-#         return song_list
+    def rcm_songs_by_mood(self, track_id:str, album_id: str):
+        cursor = self._conn_rcm_db.cursor()
+        query = """     
+"""

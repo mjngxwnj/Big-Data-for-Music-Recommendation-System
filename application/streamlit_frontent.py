@@ -172,15 +172,20 @@ class Streamlit_UI():
     def search_page(self):
         song_name = st.text_input("Search a song:")
         if song_name:
-            data = self._backend.read_music_db(song_name)
-            if data.empty:
+            songs_found = self._backend.read_music_db(song_name)
+            if songs_found.empty:
                 st.markdown("No songs found!")
             else:
                 st.write("### Search results: ")
-                for _ , song in data.iterrows():
-                    if(st.button(f"{song.TRACK_NAME} - {song.ARTIST_NAME}", key = song.TRACK_ID)):
-                        st.session_state.search_page['selected_song'] = song.to_dict()
-                        st.rerun()
+                # for _ , song in data.iterrows():
+                #     if(st.button(f"{song.TRACK_NAME} - {song.ARTIST_NAME}", key = song.TRACK_ID)):
+                #         st.session_state.search_page['selected_song'] = song.to_dict()
+                #         st.rerun()
+                for song in songs_found:
+                    if(st.button(f"{song['TRACK_NAME']} - {song['ARTIST_NAME']}", key = song['TRACK_ID'])):
+                       st.session_state.search_page['selected_song'] = song
+                       st.rerun()
+
         if st.button("Back"):
             del st.session_state.search_page
             st.rerun()
