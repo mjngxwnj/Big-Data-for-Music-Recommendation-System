@@ -45,15 +45,15 @@ class BackEnd:
             st.session_state.spark = SparkSession.builder.config(conf = conf).getOrCreate()
 
         if "rcm_bcf_data" not in st.session_state:
-            st.session_state.rcm_bcf_data = st.session_state.spark.read.format('parquet') \
+            st.session_state.rcm_cbf_data = st.session_state.spark.read.format('parquet') \
                                                                   .option('header', 'true') \
                                                                   .load(self._HDFS_RCM_CBF_PATH)
 
         self._conn_music_db = st.session_state.conn_music_db
         self._conn_rcm_db = st.session_state.conn_rcm_db
         self._spark = st.session_state.spark
-        self._rcm_bcf_data = st.session_state.rcm_bcf_data
-        self._rcm_bcf_data.cache()
+        self._rcm_cbf_data = st.session_state.rcm_bcf_data
+        self._rcm_cbf_data.cache()
 
         atexit.register(self.clean)
 
@@ -74,13 +74,15 @@ class BackEnd:
                     ORDER BY FOLLOWERS DESC; 
                 """
         cursor.execute(query)
-        rows = [dict(row) for row in cursor]
+        columns = [desc[0] for desc in cursor.description]
+        rows = [dict(zip(columns, row)) for row in cursor]
         unique_names = set()
         songs = []
         for row in rows:
-            if row['TRACK_NAME'] not in unique_names:
+            ident = (row['TRACK_NAME'], row['ARTIST_NAME'])
+            if ident not in unique_names:
                 songs.append(row)
-                unique_names.add(row['TRACK_NAME'])
+                unique_names.add(ident)
         return songs
     
     def rcm_songs_by_album(self, album_id):
@@ -94,13 +96,15 @@ class BackEnd:
                     ORDER BY RANDOM() LIMIT 10;
                 """
         cursor.execute(query)
-        rows = [dict(row) for row in cursor]
+        columns = [desc[0] for desc in cursor.description]
+        rows = [dict(zip(columns, row)) for row in cursor]
         unique_names = set()
         songs = []
         for row in rows:
-            if row['TRACK_NAME'] not in unique_names:
+            ident = (row['TRACK_NAME'], row['ARTIST_NAME'])
+            if ident not in unique_names:
                 songs.append(row)
-                unique_names.add(row['TRACK_NAME'])
+                unique_names.add(ident)
         return songs
     
     def rcm_songs_by_cbf(self, track_id: str, album_id: str):
@@ -140,7 +144,20 @@ class BackEnd:
                             'PREVIEW': song['preview']})
         return songs
 
-    def rcm_songs_by_mood(self, track_id:str, album_id: str):
+    def rcm_songs_by_mood(self, mood:str, genres: str):
         cursor = self._conn_rcm_db.cursor()
-        query = """     
-"""
+        query = f"""
+                    SELECT * FROM RCM_MOOD_GENRES_TABLE
+                    WHERE MOOD = '{mood}' AND GENRES = '{genres}';
+                """
+        cursor.execute(query)
+        columns = [desc[0] for desc in cursor.description]
+        rows = [dict(zip(columns, row)) for row in cursor]
+        unique_names = set()
+        songs = []
+        for row in rows:
+            ident = (row['TRACK_NAME'], row['ARTIST_NAME'])
+            if ident not in unique_names:
+                songs.append(row)
+                unique_names.add(ident)
+        return songs

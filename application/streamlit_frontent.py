@@ -173,14 +173,10 @@ class Streamlit_UI():
         song_name = st.text_input("Search a song:")
         if song_name:
             songs_found = self._backend.read_music_db(song_name)
-            if songs_found.empty:
+            if not songs_found:
                 st.markdown("No songs found!")
             else:
                 st.write("### Search results: ")
-                # for _ , song in data.iterrows():
-                #     if(st.button(f"{song.TRACK_NAME} - {song.ARTIST_NAME}", key = song.TRACK_ID)):
-                #         st.session_state.search_page['selected_song'] = song.to_dict()
-                #         st.rerun()
                 for song in songs_found:
                     if(st.button(f"{song['TRACK_NAME']} - {song['ARTIST_NAME']}", key = song['TRACK_ID'])):
                        st.session_state.search_page['selected_song'] = song
@@ -201,20 +197,20 @@ class Streamlit_UI():
             st.write(f"**Artist**: {song['ARTIST_NAME']}")
             st.write(f"**Followers**: {song['FOLLOWERS']}")
             st.write(f"**Spotify**: {song['URL']}")
-        st.audio(song['PREVIEW'])
+        if song['PREVIEW']: st.audio(song['PREVIEW'])
 
         recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song["ALBUM_ID"])
         for rcm_song in recommend_songs:
             st.write(rcm_song['TRACK_NAME'])
             st.write(rcm_song['ARTIST_NAME'])
             st.image(rcm_song['LINK_IMAGE'])
-            st.audio(rcm_song['PREVIEW'])
+            if rcm_song['PREVIEW']: st.audio(rcm_song['PREVIEW'])
             
         if st.button("Back"):
-            del st.session_state.search['selected_song']
+            del st.session_state.search_page['selected_song']
             st.rerun()
 
-    #======================================== Search songs by mood ========================================
+    #======================================== Recommend songs by mood ========================================
     def search_by_mood(self):
         # Back button in the top-left corner
         if st.button("🏠︎ Home"):
@@ -232,9 +228,9 @@ class Streamlit_UI():
                 
             if genres:
                 st.session_state.search_by_mood = {'selected_song': []}
-                songs = search_rcm_mood_genres(mood, genres)
-                for _ , song in songs.iterrows():
-                    st.session_state.search_by_mood['selected_song'].append(song.to_dict())
+                recommend_songs = self._backend.rcm_songs_by_mood(mood, genres)
+                for rcm_song in recommend_songs:
+                    st.session_state.search_by_mood['selected_song'].append(rcm_song)
                 st.session_state.current_index = 0 # Reset the position of the song
                 st.rerun()
                 
