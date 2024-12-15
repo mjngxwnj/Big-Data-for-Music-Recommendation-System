@@ -15,14 +15,13 @@ class Streamlit_UI():
     
     #======================================== MAIN UI ========================================
     def display_main_UI(self):
-        
         # animation
-        spotify_animation = "spotify_animation.gif"
-        music_animation = "music_animation.gif"
+        spotify_animation = "D:\\Big-Data-for-Music-Recommendation-System\\application\\animation\\spotify_animation.gif"
+        music_animation = "D:\\Big-Data-for-Music-Recommendation-System\\application\\animation\music_animation.gif"
         
         # images
         spotify_logo = "https://www.freepnglogos.com/uploads/spotify-logo-png/spotify-icon-black-17.png"
-        casette = "listening.png"
+        listener = "D:\\Big-Data-for-Music-Recommendation-System\\application\\images\\music.png"
         
         # ------ PAGE CONFIGURATION ------
         st.set_page_config(page_title = "Spotiy Music Recommendation System", page_icon= ":notes:", layout= "wide")
@@ -40,7 +39,7 @@ class Streamlit_UI():
         div.stButton > button:first-child {
             background-color: green;
             color:#000000;
-        }
+        } 
         div.stButton > button:hover {
             background-color: black;
             color:#FFFFFF;
@@ -76,22 +75,8 @@ class Streamlit_UI():
             color: #FFFFFF !important; /* Màu chữ trắng */
             text-shadow: 1px 1px 2px black; /* Thêm viền mờ đen cho chữ */
         }
-
-        .stButton > button {
-            background-color: #1DDA63;
-            color: white;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            transition: 0.3s;
-        }
-
-        .stButton > button:hover {
-            background-color: #14B856; /* Màu đậm hơn khi hover */
-        }
         </style>
         """
-
         st.markdown(page_bg, unsafe_allow_html=True)
   
         # Title and intro section
@@ -120,7 +105,7 @@ class Streamlit_UI():
             with left_col:
                 st.markdown(intro_para, unsafe_allow_html = True)
             with right_col:
-                st.image(casette, use_container_width = False)
+                st.image(listener, use_container_width = False)
                 
         # ------ BUTTON OPTION ------
         st.title("Your option in here")
@@ -130,7 +115,6 @@ class Streamlit_UI():
         </p> """
         st.markdown(line1, unsafe_allow_html = True)
 
-        # --- TAB CONFIG ---
         with st.container():
             left_col, middle_col, right_col = st.columns([4, 1, 4])
 
@@ -163,8 +147,10 @@ class Streamlit_UI():
         # with col5:
         #     st.text(recommended_music_names[4])
         #     st.image(recommended_music_posters[4])
-      
-              
+        
+        # --- FOOTER ---
+        
+                
     #======================================== Search songs ========================================
     def search_page(self):
         song_name = st.text_input("Search a song:")
@@ -201,16 +187,88 @@ class Streamlit_UI():
 
     #======================================== Search songs by mood ========================================
     def search_by_mood(self):
+        # ------ DESIGN WEB APP ------
         # Back button in the top-left corner
         if st.button("🏠︎ Home"):
             del st.session_state.search_by_mood
             st.rerun()
             
+        # animation
+        music_logo = "D:\\Big-Data-for-Music-Recommendation-System\\application\\animation\music_animation.gif"
+        
+        # Button config
+        m = st.markdown("""
+        <style>
+        div.stButton > button:first-child {
+            background-color: green;
+            color:#000000;
+        } 
+        div.stButton > button:hover {
+            background-color: black;
+            color:#FFFFFF;
+            }
+        </style>""", unsafe_allow_html=True)
+        
+        search_by_mood_bg = """
+        <style>
+        [data-testid="stAppViewContainer"] {
+            background-image: url("https://i.pinimg.com/736x/3b/22/2e/3b222e16b34f26ebf07f4b087cc9feff.jpg");
+            background-size: cover;
+            background-attachment: fixed; /* Giữ background đứng yên */
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.8; /* Giảm opacity để chữ nổi bật */
+        }
+        
+        /* Tạo overlay màu mờ */
+        [data-testid="stAppViewContainer"]::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Màu đen mờ phủ lên */
+            z-index: -1; /* Chìm xuống dưới nội dung */
+        }
+
+        /* Làm nổi bật chữ */
+        h1, h2, h3, h4, h5, p, a {
+            color: #FFFFFF !important; /* Màu chữ trắng */
+            text-shadow: 1px 1px 2px black; /* Thêm viền mờ đen cho chữ */
+        }
+        </style>
+        """
+        st.markdown(search_by_mood_bg, unsafe_allow_html=True)
+        
+        # Intro lines
+        intro_para = """
+        <p style = 'font-size: 40px;'><b>Music speaks to us in many ways, and your mood matters to us:</b></p>
+        <p style="font-size: 24px;">  
+        <br>  
+        If today feels a bit <b>sad 😢</b>, let us bring you gentle and soothing melodies to lift your spirits and remind you that brighter days are ahead.  
+        <br>  
+        If you're <b>feeling happy 🥰</b>, we've got vibrant and energetic tracks to keep the joy flowing through your day.  
+        <br>  
+        And if your mood is <b>neutral 😐</b>, why not explore a curated list of balanced tunes to keep things mellow and enjoyable?  
+        <br><br>  
+        Let's fill your <b>mood and genres</b>. Our system will bring songs to confide with you.  
+        <br>
+        </p>
+        """
+        with st.container():
+            left_col, right_col = st.columns([2, 1])
+            with left_col:
+                st.markdown(intro_para, unsafe_allow_html= True)
+            with right_col:
+                st.image(music_logo, use_container_width= True)
+        
+        # ------ RECOMMEND SONGS ------
         genres = st.text_input("Choose your favourite genres: ")
-        mood = st.selectbox("How is your mood today!", ["Happy", "Sad", "Neutral"])
+        mood = st.selectbox("How is your mood today ?", ["Happy 🥰", "Sad 😢", "Neutral 😐"])
         st.write("Your mood is: ", mood)
         
-        if st.button("Submit"):
+        if st.button("Search"):
             with st.status("Searching songs...", expanded = True) as status:
                 time.sleep(1)
                 status.update(label = "Search Complete", state = "complete", expanded = False)

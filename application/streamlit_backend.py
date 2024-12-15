@@ -48,7 +48,7 @@ def search_rcm_mood_genres(mood: str, genres: str):
     return data
 
 
-def search_rcm_bcf(song_name: str): 
+def search_rcm_cbf(song_name: str): 
 
     
     spark = SparkSession.builder.config(conf = conf).getOrCreate()
