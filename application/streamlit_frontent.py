@@ -186,7 +186,7 @@ class Streamlit_UI():
             st.rerun()
 
     def display_search(self):
-        song = st.session_state.search['selected_song']
+        song = st.session_state.search_page['selected_song']
         picture_line, info_line = st.columns([1,4])
         with picture_line:
             st.image(song['LINK_IMAGE'])
@@ -198,6 +198,13 @@ class Streamlit_UI():
             st.write(f"**Spotify**: {song['URL']}")
         st.audio(song['PREVIEW'])
 
+        recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song["ALBUM_ID"])
+        for rcm_song in recommend_songs:
+            st.write(rcm_song['TRACK_NAME'])
+            st.write(rcm_song['ARTIST_NAME'])
+            st.image(rcm_song['LINK_IMAGE'])
+            st.audio(rcm_song['PREVIEW'])
+            
         if st.button("Back"):
             del st.session_state.search['selected_song']
             st.rerun()
@@ -284,7 +291,7 @@ class Streamlit_UI():
     #======================================== Generate application ========================================
     def generate_application(self):
         if "search_page" in st.session_state:
-            if "selected_song" in st.session_state.search:
+            if "selected_song" in st.session_state.search_page:
                 self.display_search()
             else:
                 self.search_page()

@@ -65,8 +65,9 @@ class BackEnd:
     """ ============================================ EXECUTE & QUERY ============================================ """
     def read_music_db(self, song_name: str = None, artist_name: str = None):
         cursor = self._conn_music_db.cursor()
-        query = f""" SELECT DIM_ARTIST.NAME ARTIST_NAME, FACT_TRACK.URL URL, 
-                    FOLLOWERS, TRACK_ID, FACT_TRACK.NAME TRACK_NAME, PREVIEW, LINK_IMAGE
+        query = f"""    
+                    SELECT DIM_ARTIST.NAME ARTIST_NAME, FACT_TRACK.URL URL, FOLLOWERS, 
+                    TRACK_ID, FACT_TRACK.NAME TRACK_NAME, PREVIEW, LINK_IMAGE, ALBUM_ID
                     FROM DIM_ARTIST JOIN FACT_TRACK 
                     ON DIM_ARTIST.ID = FACT_TRACK.ARTIST_ID
                     WHERE FACT_TRACK.NAME ILIKE '{song_name}%'
@@ -76,14 +77,27 @@ class BackEnd:
         songs = cursor.fetch_pandas_all()
         cursor.close()
         return songs
-
-    #def exec_rcm_by_album(self, track_id):
-
-    def exec_rcm_bcf(self, track_id: str):
+    def rcm_songs_by_album(self, album_id):
+        cursor = self._conn_music_db.cursor()
+        query = f"""
+                    SELECT DIM_ARTIST.NAME ARTIST_NAME, FACT_TRACK.URL URL, FOLLOWERS, TRACK_ID, 
+                    FACT_TRACK.NAME TRACK_NAME, PREVIEW, LINK_IMAGE
+                    FROM DIM_ARTIST JOIN FACT_TRACK
+                    ON DIM_ARTIST.ID = FACT_TRACK.ARTIST_ID
+                    WHERE ALBUM_ID = '{album_id}'
+                    ORDER BY RANDOM() LIMIT 10;
+                """
+        cursor.execute(query)
+        songs = [dict(row) for row in cursor]
+        return songs
+    
+    def rcm_songs_by_cbf(self, track_id: str, album_id: str):
         df = self._rcm_bcf_data
         track_list = df.filter(df["track_id"] == track_id)
+        if track_list.isEmpty():
+            return self.rcm_songs_by_album(album_id)
+        
         track_list.cache()
-
         track = track_list.first()
         input_song_name, input_features = track['name'], track['normalized_features']
 
@@ -105,12 +119,12 @@ class BackEnd:
                                             .collect()
         songs = []
         for song in top_recommendations:
-            songs.append({'artist_name': song['artist_name'],
-                            'followers': song['followers'],
-                            'link_image': song['link_image'],
-                            'url': song['url'],
-                            'name': song['name'],
-                            'preview': song['preview']})
+            songs.append({'ARTIST_NAME': song['artist_name'],
+                            'FOLLOWERS': song['followers'],
+                            'LINK_IMAGE': song['link_image'],
+                            'URL': song['url'],
+                            'TRACK_NAME': song['name'],
+                            'PREVIEW': song['preview']})
         return songs
     
 
