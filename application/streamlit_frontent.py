@@ -17,12 +17,12 @@ class Streamlit_UI():
     #======================================== MAIN UI ========================================
     def display_main_UI(self):
         # animation
-        spotify_animation = "D:\\Big-Data-for-Music-Recommendation-System\\application\\animation\\spotify_animation.gif"
-        music_animation = "D:\\Big-Data-for-Music-Recommendation-System\\application\\animation\music_animation.gif"
+        spotify_animation = "/app/animation/spotify_animation.gif"
+        music_animation = "/app/animation/music_animation.gif"
         
         # images
         spotify_logo = "https://www.freepnglogos.com/uploads/spotify-logo-png/spotify-icon-black-17.png"
-        listener = "D:\\Big-Data-for-Music-Recommendation-System\\application\\images\\music.png"
+        listener = "/app/images/music.png"
         
         # ------ PAGE CONFIGURATION ------
         st.set_page_config(page_title = "Spotiy Music Recommendation System", page_icon= ":notes:", layout= "wide")
@@ -182,46 +182,170 @@ class Streamlit_UI():
             
     #======================================== Search songs ========================================
     def search_page(self):
-        song_name = st.text_input("Search a song:")
-        artist_name = st.text_input("Search an artist: ")
-        songs_found = self._backend.read_music_db(song_name, None)
-        
-        if not songs_found:
-            st.markdown("No songs found!")
-        else:
-            st.write("### Search results: ")
-            for song in songs_found:
-                if(st.button(f"{song['TRACK_NAME']} - {song['ARTIST_NAME']}", key = song['TRACK_ID'])):
-                    st.session_state.search_page['selected_song'] = song
-                    st.rerun()
-
-        if st.button("Back"):
+        # ------ DESIGN WEB APP ------
+        # Back button in the top-left corner
+        if st.button("🏠︎ Home"):
             del st.session_state.search_page
             st.rerun()
+        # animation
+        music_logo = "/app/animation/pandas-animation.gif"
 
-    def display_search(self):
-        song = st.session_state.search_page['selected_song']
-        picture_line, info_line = st.columns([1,4])
-        with picture_line:
-            st.image(song['LINK_IMAGE'])
+        # Button config
+        m = st.markdown("""
+        <style>
+        div.stButton > button:first-child {
+            background-color: green;
+            color:#000000;
+        } 
+        div.stButton > button:hover {
+            background-color: black;
+            color:#FFFFFF;
+            }
+        </style>""", unsafe_allow_html=True)
 
-        with info_line:
-            st.write(f"### {song['TRACK_NAME']}")
-            st.write(f"**Artist**: {song['ARTIST_NAME']}")
-            st.write(f"**Followers**: {song['FOLLOWERS']}")
-            st.write(f"**Spotify**: {song['URL']}")
-        if song['PREVIEW']: st.audio(song['PREVIEW'])
+        search_by_name_bg = """
+        <style>
+        [data-testid="stAppViewContainer"] {
+            background-image: url("https://i.pinimg.com/originals/4f/90/8c/4f908c55b9e7bee05dacfdfa81a36e2f.gif");
+            background-size: cover;
+            background-attachment: fixed; /* Giữ background đứng yên */
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.8; /* Giảm opacity để chữ nổi bật */
+        }
+        
+        /* Tạo overlay màu mờ */
+        [data-testid="stAppViewContainer"]::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* Màu đen mờ phủ lên */
+            z-index: -1; /* Chìm xuống dưới nội dung */
+        }
 
-        recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song['ALBUM_ID'])
-        for rcm_song in recommend_songs:
-            st.write(rcm_song['TRACK_NAME'])
-            st.write(rcm_song['ARTIST_NAME'])
-            st.image(rcm_song['LINK_IMAGE'])
-            if rcm_song['PREVIEW']: st.audio(rcm_song['PREVIEW'])
+        /* Làm nổi bật chữ */
+        h1, h2, h3, h4, h5, p, a {
+            color: #FFFFFF !important; /* Màu chữ trắng */
+            text-shadow: 1px 1px 2px black; /* Thêm viền mờ đen cho chữ */
+        }
+        </style>
+        """
+        st.markdown(search_by_name_bg, unsafe_allow_html=True)
+
+        # Intro lines
+        intro_para = """
+        <p style = 'font-size: 40px;'><b>Explore your favourite artists, tracks, albums in here:</b></p>
+        <p style="font-size: 24px;">  
+        <br>  
+        Imagine stepping into a world where every note, every beat, and every lyric is tailored just for you. 
+        Whether you're chasing a calm melody to unwind, a fiery rhythm to fuel your energy, or a nostalgic tune to relive memories — music speaks when words can't.
+        <br><br>  
+        Let us take you on a journey where your favorite songs meet hidden gems, and every recommendation feels like a personal discovery — because music isn't just heard, it's felt. 
+        <br>
+        </p>
+        """
+        with st.container():
+            left_col, right_col = st.columns([2, 1])
+            with left_col:
+                st.markdown(intro_para, unsafe_allow_html= True)
+            with right_col:
+                st.image(music_logo, use_container_width= True)
+        
+        # ------ RECOMMEND SONGS ------
+        if 'song_name' not in st.session_state:
+            st.session_state.song_name = None
+
+        # Input song name
+        if st.session_state.song_name is None:
+            # Input for searching a song
+            song_name = st.text_input("Search a song:")
+            if song_name:
+                st.session_state.song_name = song_name
+                st.rerun()
+        else:
+            # Finding the song
+            songs_found = self._backend.read_music_db(st.session_state.song_name, None)
+
+            # Display the searching result
+            if not songs_found:
+                st.markdown("No songs found!")
+                if st.button("Back"):
+                        st.session_state.song_name = None
+                        st.rerun()
+            else:
+                st.write("### Search results: ")
+
+                # Make a radio button for users to choose songs
+                selected_song = st.radio(
+                    "Choose a song:",
+                    options=[f"{song['TRACK_NAME']} - {song['ARTIST_NAME']}" for song in songs_found],
+                    index=0,
+                    key="selected_song_radio"
+                )
+
+                # Find the chosen song
+                for song in songs_found:
+                    if selected_song == f"{song['TRACK_NAME']} - {song['ARTIST_NAME']}":
+                        chosen_song = song
+                        st.session_state.selected_song = chosen_song
+                        break
+
+                # Display the details of the chosen song
+                if 'selected_song' in st.session_state:
+                    chosen_song = st.session_state.selected_song
+                    st.write("## Selected Song Details 🎵")
+                    picture_line, info_line = st.columns([1, 4])
+                    with picture_line:
+                        st.image(chosen_song['LINK_IMAGE'])
+                    with info_line:
+                        st.write(f"### {chosen_song['TRACK_NAME']}")
+                        st.write(f"**Artist**: {chosen_song['ARTIST_NAME']}")
+                        st.write(f"**Followers**: {chosen_song['FOLLOWERS']}")
+                        st.write(f"**Spotify**: {chosen_song['URL']}")
+                    if chosen_song['PREVIEW']:
+                        st.audio(chosen_song['PREVIEW'])
+
+                    # Display other recommendation songs
+                    st.write("### Recommended Songs for You:")
+                    recommend_songs = self._backend.rcm_songs_by_cbf(chosen_song['TRACK_ID'], chosen_song['ALBUM_ID'])
+                    for rcm_song in recommend_songs:
+                        st.write(f"**{rcm_song['TRACK_NAME']}** by {rcm_song['ARTIST_NAME']}")
+                        st.image(rcm_song['LINK_IMAGE'], width=100)
+                        if rcm_song['PREVIEW']:
+                            st.audio(rcm_song['PREVIEW'])
+
+                    # Back button: Clear selected song and reset search
+                    if st.button("Back"):
+                        st.session_state.song_name = None
+                        del st.session_state.selected_song
+                        st.rerun()
+
+    # def display_search(self):
+    #     song = st.session_state.search_page['selected_song']
+    #     picture_line, info_line = st.columns([1,4])
+    #     with picture_line:
+    #         st.image(song['LINK_IMAGE'])
+
+    #     with info_line:
+    #         st.write(f"### {song['TRACK_NAME']}")
+    #         st.write(f"**Artist**: {song['ARTIST_NAME']}")
+    #         st.write(f"**Followers**: {song['FOLLOWERS']}")
+    #         st.write(f"**Spotify**: {song['URL']}")
+    #     if song['PREVIEW']: st.audio(song['PREVIEW'])
+
+    #     recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song['ALBUM_ID'])
+    #     for rcm_song in recommend_songs:
+    #         st.write(rcm_song['TRACK_NAME'])
+    #         st.write(rcm_song['ARTIST_NAME'])
+    #         st.image(rcm_song['LINK_IMAGE'])
+    #         if rcm_song['PREVIEW']: st.audio(rcm_song['PREVIEW'])
             
-        if st.button("Back"):
-            del st.session_state.search_page['selected_song']
-            st.rerun()
+    #     if st.button("Back"):
+    #         del st.session_state.search_page['selected_song']
+    #         st.rerun()
 
     #======================================== Recommend songs by mood ========================================
     def search_by_mood(self):
@@ -232,7 +356,7 @@ class Streamlit_UI():
             st.rerun()
             
         # animation
-        music_logo = "D:\\Big-Data-for-Music-Recommendation-System\\application\\animation\music_animation.gif"
+        music_logo = "/app/animation/music_animation.gif"
         
         # Button config
         m = st.markdown("""
@@ -303,8 +427,7 @@ class Streamlit_UI():
         
         # ------ RECOMMEND SONGS ------
         genres = st.text_input("Choose your favourite genres: ")
-        mood = st.selectbox("How is your mood today!", ["", "Happy🥰", "Sad😢", "Neutral😐"])
-        st.write("Your mood is: ", mood)
+        mood = st.selectbox("How is your mood today!", ["Happy", "Sad", "Neutral"])
         
         if st.button("Submit"):
             with st.status("Searching songs...", expanded = True) as status:
