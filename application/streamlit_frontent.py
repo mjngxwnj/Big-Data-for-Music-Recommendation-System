@@ -171,8 +171,9 @@ class Streamlit_UI():
     #======================================== Search songs ========================================
     def search_page(self):
         song_name = st.text_input("Search a song:")
-        if song_name:
-            songs_found = self._backend.read_music_db(song_name)
+        artist_name = st.text_input("Search an artist: ")
+        if song_name or artist_name:
+            songs_found = self._backend.read_music_db(song_name, artist_name)
             if not songs_found:
                 st.markdown("No songs found!")
             else:

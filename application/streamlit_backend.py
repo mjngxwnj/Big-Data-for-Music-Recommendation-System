@@ -70,9 +70,17 @@ class BackEnd:
                     TRACK_ID, FACT_TRACK.NAME TRACK_NAME, PREVIEW, LINK_IMAGE, ALBUM_ID
                     FROM DIM_ARTIST JOIN FACT_TRACK 
                     ON DIM_ARTIST.ID = FACT_TRACK.ARTIST_ID
-                    WHERE FACT_TRACK.NAME ILIKE '{song_name}%'
-                    ORDER BY FOLLOWERS DESC; 
                 """
+                    # WHERE FACT_TRACK.NAME ILIKE '{song_name}%'
+                    # ORDER BY FOLLOWERS DESC; 
+
+        query_opt = f" WHERE FACT_TRACK.NAME ILIKE '{song_name}%' "
+
+        if song_name is None:
+            query_opt = f" WHERE DIM_ARTIST.NAME ILIKE '{artist_name}%' "
+
+        query += query_opt + "ORDER BY FOLLOWERS DESC;"
+        
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
         rows = [dict(zip(columns, row)) for row in cursor]
@@ -119,7 +127,8 @@ class BackEnd:
         input_song_name, input_features = track['name'], track['combined_features']
 
         genres_list = track_list.select("genres").rdd.flatMap(lambda x: x).filter(lambda genres: genres != "").collect()
-        filtered_songs = df.filter(df['genres'].isin(genres_list))
+        filtered_songs = df.filter(~(df['track_id'] == track_id)) \
+                           .filter(df['genres'].isin(genres_list))
         filtered_songs = filtered_songs.drop('genres').dropDuplicates(['track_id'])
 
         def cosine_similarity(v1, v2):
@@ -143,7 +152,6 @@ class BackEnd:
                             'URL': song['url'],
                             'TRACK_NAME': song['name'],
                             'PREVIEW': song['preview']})
-        songs.pop(0)
         return songs
 
     def rcm_songs_by_mood(self, mood:str, genres: str):
@@ -155,7 +163,8 @@ class BackEnd:
                         FROM RCM_MOOD_GENRES_TABLE
                     )
                     SELECT * FROM RCM_MOOD_SONG
-                    WHERE SONG_NUM <= 2 AND MOOD = '{mood}' AND GENRES = '{genres}';
+                    WHERE SONG_NUM <= 2 AND MOOD = '{mood}' AND GENRES = '{genres}'
+                    LIMIT 10;
                 """
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
