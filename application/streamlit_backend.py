@@ -73,14 +73,15 @@ class BackEnd:
                 """
                     # WHERE FACT_TRACK.NAME ILIKE '{song_name}%'
                     # ORDER BY FOLLOWERS DESC; 
-
-        query_opt = f" WHERE FACT_TRACK.NAME ILIKE '{song_name}%' "
-
-        if song_name is None:
-            query_opt = f" WHERE DIM_ARTIST.NAME ILIKE '{artist_name}%' "
+        if song_name and artist_name:
+            query_opt = f" WHERE FACT_TRACK.NAME ILIKE '{song_name}%' AND DIM_ARTIST.NAME ILIKE '{artist_name}%' "
+        elif song_name:
+            query_opt = f" WHERE FACT_TRACK.NAME ILIKE '{song_name}%' "
+        else:
+            query_opt = f" WHERE DIM_ARTIST.NAME ILIKE '{artist_name}%'"
 
         query += query_opt + "ORDER BY FOLLOWERS DESC;"
-        
+
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
         rows = [dict(zip(columns, row)) for row in cursor]
