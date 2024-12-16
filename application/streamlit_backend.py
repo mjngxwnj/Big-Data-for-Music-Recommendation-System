@@ -52,7 +52,7 @@ class BackEnd:
         self._conn_music_db = st.session_state.conn_music_db
         self._conn_rcm_db = st.session_state.conn_rcm_db
         self._spark = st.session_state.spark
-        self._rcm_cbf_data = st.session_state.rcm_bcf_data
+        self._rcm_cbf_data = st.session_state.rcm_cbf_data
         self._rcm_cbf_data.cache()
 
         atexit.register(self.clean)
@@ -85,7 +85,7 @@ class BackEnd:
                 unique_names.add(ident)
         return songs
     
-    def rcm_songs_by_album(self, album_id):
+    def rcm_songs_by_album(self, track_id: str, album_id: str ):
         cursor = self._conn_music_db.cursor()
         query = f"""
                     SELECT DIM_ARTIST.NAME ARTIST_NAME, FACT_TRACK.URL URL, FOLLOWERS, TRACK_ID, 
@@ -93,6 +93,7 @@ class BackEnd:
                     FROM DIM_ARTIST JOIN FACT_TRACK
                     ON DIM_ARTIST.ID = FACT_TRACK.ARTIST_ID
                     WHERE ALBUM_ID = '{album_id}'
+                    AND TRACK_ID != '{track_id}'
                     ORDER BY RANDOM() LIMIT 10;
                 """
         cursor.execute(query)
@@ -108,10 +109,10 @@ class BackEnd:
         return songs
     
     def rcm_songs_by_cbf(self, track_id: str, album_id: str):
-        df = self._rcm_bcf_data
+        df = self._rcm_cbf_data
         track_list = df.filter(df["track_id"] == track_id)
         if track_list.isEmpty():
-            return self.rcm_songs_by_album(album_id)
+            return self.rcm_songs_by_album(track_id, album_id)
         
         track_list.cache()
         track = track_list.first()
@@ -142,13 +143,19 @@ class BackEnd:
                             'URL': song['url'],
                             'TRACK_NAME': song['name'],
                             'PREVIEW': song['preview']})
+        songs.pop(0)
         return songs
 
     def rcm_songs_by_mood(self, mood:str, genres: str):
         cursor = self._conn_rcm_db.cursor()
         query = f"""
-                    SELECT * FROM RCM_MOOD_GENRES_TABLE
-                    WHERE MOOD = '{mood}' AND GENRES = '{genres}';
+                    WITH RCM_MOOD_SONG AS(
+                        SELECT *, 
+                        ROW_NUMBER() OVER (PARTITION BY ARTIST_NAME ORDER BY POPULARITY DESC) SONG_NUM
+                        FROM RCM_MOOD_GENRES_TABLE
+                    )
+                    SELECT * FROM RCM_MOOD_SONG
+                    WHERE SONG_NUM <= 2 AND MOOD = '{mood}' AND GENRES = '{genres}';
                 """
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
@@ -156,7 +163,7 @@ class BackEnd:
         unique_names = set()
         songs = []
         for row in rows:
-            ident = (row['TRACK_NAME'], row['ARTIST_NAME'])
+            ident = (row['NAME'], row['ARTIST_NAME'])
             if ident not in unique_names:
                 songs.append(row)
                 unique_names.add(ident)

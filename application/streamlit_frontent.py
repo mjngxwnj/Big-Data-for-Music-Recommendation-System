@@ -199,7 +199,7 @@ class Streamlit_UI():
             st.write(f"**Spotify**: {song['URL']}")
         if song['PREVIEW']: st.audio(song['PREVIEW'])
 
-        recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song["ALBUM_ID"])
+        recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song['ALBUM_ID'])
         for rcm_song in recommend_songs:
             st.write(rcm_song['TRACK_NAME'])
             st.write(rcm_song['ARTIST_NAME'])
