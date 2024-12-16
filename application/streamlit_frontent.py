@@ -4,9 +4,7 @@ import json
 from streamlit_backend import *
 from streamlit_lottie import st_lottie
 from streamlit.components.v1 import html
-from PIL import Image
-import base64
-from io import BytesIO
+
 
 class Streamlit_UI():
     def __init__(self):
@@ -81,7 +79,7 @@ class Streamlit_UI():
   
         # Title and intro section
         # Heading
-        heading_animation = "<p style = 'font-size: 70px;'><b>Welcome to Spotify Music Recommendation System 🎵</b></p>"
+        heading_animation = """<p style="text-align: center; font-size: 60px;"><b>Welcome to Spotify Music Recommendation System 🎵</b></p>"""
         # Intro lines
         intro_para = """
         <p style = "font-size: 24px;">
@@ -99,7 +97,8 @@ class Streamlit_UI():
                 st.image(spotify_animation, use_container_width= True)
             with right_col:
                 st.markdown(heading_animation, unsafe_allow_html= True)
-                  
+        
+        st.title("Introduction")
         with st.container():
             left_col, right_col = st.columns([1.4, 1])
             with left_col:
@@ -148,28 +147,56 @@ class Streamlit_UI():
         #     st.text(recommended_music_names[4])
         #     st.image(recommended_music_posters[4])
         
-        # --- FOOTER ---
-        
-                
+        # ------ FOOTER ------
+        footer_style = """
+        <style>
+        .footer {
+            text-align: center;
+            font-size: 30px;
+            margin-top: 50px;
+            color: white;
+        }
+        .subfooter {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 10px;
+            color: white;
+        }
+        a {
+            color: #1DB954;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        </style>
+        """
+
+        footer_animation = '<div class="footer"><b>Thanks for using our system to listen 🎵</b></div>'
+        subfooter = '<div class="subfooter">Save tracks, follow artists and build your own playlists on main page <a href="https://www.spotify.com">Spotify</a>. All for free.</div>'
+
+        st.markdown(footer_style, unsafe_allow_html=True)
+        st.markdown(footer_animation, unsafe_allow_html=True)
+        st.markdown(subfooter, unsafe_allow_html=True)
+            
     #======================================== Search songs ========================================
     def search_page(self):
         song_name = st.text_input("Search a song:")
         if song_name:
-            data = search_track_Snowflake(song_name)
-            if data.empty:
+            songs_found = self._backend.read_music_db(song_name)
+            if not songs_found:
                 st.markdown("No songs found!")
             else:
                 st.write("### Search results: ")
-                for _ , song in data.iterrows():
-                    if(st.button(f"{song.TRACK_NAME} - {song.ARTIST_NAME}", key = song.TRACK_ID)):
-                        st.session_state.search['selected_song'] = song.to_dict()
-                        st.rerun()
+                for song in songs_found:
+                    if(st.button(f"{song['TRACK_NAME']} - {song['ARTIST_NAME']}", key = song['TRACK_ID'])):
+                       st.session_state.search_page['selected_song'] = song
+                       st.rerun()
+
         if st.button("Back"):
-            del st.session_state.search
+            del st.session_state.search_page
             st.rerun()
 
     def display_search(self):
-        song = st.session_state.search['selected_song']
+        song = st.session_state.search_page['selected_song']
         picture_line, info_line = st.columns([1,4])
         with picture_line:
             st.image(song['LINK_IMAGE'])
@@ -179,10 +206,17 @@ class Streamlit_UI():
             st.write(f"**Artist**: {song['ARTIST_NAME']}")
             st.write(f"**Followers**: {song['FOLLOWERS']}")
             st.write(f"**Spotify**: {song['URL']}")
-        st.audio(song['PREVIEW'])
+        if song['PREVIEW']: st.audio(song['PREVIEW'])
 
+        recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song["ALBUM_ID"])
+        for rcm_song in recommend_songs:
+            st.write(rcm_song['TRACK_NAME'])
+            st.write(rcm_song['ARTIST_NAME'])
+            st.image(rcm_song['LINK_IMAGE'])
+            if rcm_song['PREVIEW']: st.audio(rcm_song['PREVIEW'])
+            
         if st.button("Back"):
-            del st.session_state.search['selected_song']
+            del st.session_state.search_page['selected_song']
             st.rerun()
 
     #======================================== Search songs by mood ========================================
@@ -265,19 +299,19 @@ class Streamlit_UI():
         
         # ------ RECOMMEND SONGS ------
         genres = st.text_input("Choose your favourite genres: ")
-        mood = st.selectbox("How is your mood today ?", ["Happy 🥰", "Sad 😢", "Neutral 😐"])
+        mood = st.selectbox("How is your mood today!", ["", "Happy🥰", "Sad😢", "Neutral😐"])
         st.write("Your mood is: ", mood)
         
-        if st.button("Search"):
+        if st.button("Submit"):
             with st.status("Searching songs...", expanded = True) as status:
                 time.sleep(1)
                 status.update(label = "Search Complete", state = "complete", expanded = False)
                 
             if genres:
                 st.session_state.search_by_mood = {'selected_song': []}
-                songs = search_rcm_mood_genres(mood, genres)
-                for _ , song in songs.iterrows():
-                    st.session_state.search_by_mood['selected_song'].append(song.to_dict())
+                recommend_songs = self._backend.rcm_songs_by_mood(mood, genres)
+                for rcm_song in recommend_songs:
+                    st.session_state.search_by_mood['selected_song'].append(rcm_song)
                 st.session_state.current_index = 0 # Reset the position of the song
                 st.rerun()
                 
@@ -316,25 +350,6 @@ class Streamlit_UI():
                     del st.session_state.search_by_mood['selected_song']
                     del st.session_state.current_index
                     st.rerun()
-                    
-    # def display_search_by_mood(self):
-    #     songs = st.session_state.search_by_mood['selected_song']
-    #     for song in songs:
-    #         picture_line, info_line = st.columns([1,4])
-            
-    #         with picture_line:
-    #             st.image(song['LINK_IMAGE'])
-
-    #         with info_line:
-    #             st.write(f"### {song['NAME']}")
-    #             st.write(f"**Artist**: {song['ARTIST_NAME']}")
-    #             st.write(f"**Spotify**: {song['URL']}")
-    #         st.audio(song['PREVIEW'])
-
-    #     if st.button("Back"):
-    #         del st.session_state.search_by_mood['selected_song']
-    #         st.rerun()
-
 
     #======================================== Generate application ========================================
     def generate_application(self):
