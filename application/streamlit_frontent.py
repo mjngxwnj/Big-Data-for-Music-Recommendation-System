@@ -8,6 +8,9 @@ from streamlit.components.v1 import html
 
 class Streamlit_UI():
     def __init__(self):
+
+        self._backend = BackEnd()
+
         if "main" not in st.session_state:
             st.session_state.main = None
     
@@ -180,16 +183,17 @@ class Streamlit_UI():
     #======================================== Search songs ========================================
     def search_page(self):
         song_name = st.text_input("Search a song:")
-        if song_name:
-            songs_found = self._backend.read_music_db(song_name)
-            if not songs_found:
-                st.markdown("No songs found!")
-            else:
-                st.write("### Search results: ")
-                for song in songs_found:
-                    if(st.button(f"{song['TRACK_NAME']} - {song['ARTIST_NAME']}", key = song['TRACK_ID'])):
-                       st.session_state.search_page['selected_song'] = song
-                       st.rerun()
+        artist_name = st.text_input("Search an artist: ")
+        songs_found = self._backend.read_music_db(song_name, None)
+        
+        if not songs_found:
+            st.markdown("No songs found!")
+        else:
+            st.write("### Search results: ")
+            for song in songs_found:
+                if(st.button(f"{song['TRACK_NAME']} - {song['ARTIST_NAME']}", key = song['TRACK_ID'])):
+                    st.session_state.search_page['selected_song'] = song
+                    st.rerun()
 
         if st.button("Back"):
             del st.session_state.search_page
@@ -208,7 +212,7 @@ class Streamlit_UI():
             st.write(f"**Spotify**: {song['URL']}")
         if song['PREVIEW']: st.audio(song['PREVIEW'])
 
-        recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song["ALBUM_ID"])
+        recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song['ALBUM_ID'])
         for rcm_song in recommend_songs:
             st.write(rcm_song['TRACK_NAME'])
             st.write(rcm_song['ARTIST_NAME'])
@@ -219,7 +223,7 @@ class Streamlit_UI():
             del st.session_state.search_page['selected_song']
             st.rerun()
 
-    #======================================== Search songs by mood ========================================
+    #======================================== Recommend songs by mood ========================================
     def search_by_mood(self):
         # ------ DESIGN WEB APP ------
         # Back button in the top-left corner
@@ -353,8 +357,8 @@ class Streamlit_UI():
 
     #======================================== Generate application ========================================
     def generate_application(self):
-        if "search" in st.session_state:
-            if "selected_song" in st.session_state.search:
+        if "search_page" in st.session_state:
+            if "selected_song" in st.session_state.search_page:
                 self.display_search()
             else:
                 self.search_page()
