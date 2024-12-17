@@ -137,7 +137,7 @@ def write_SnowFlake(spark: SparkSession, data: pyspark.sql.DataFrame, table_name
         raise TypeError("data must be a DataFrame!")
     
     snowflake_connection_options = {
-        "sfURL": "https://sl70006.southeast-asia.azure.snowflakecomputing.com",
+        "sfURL": "https://lv34216.southeast-asia.azure.snowflakecomputing.com",
         "sfUser": "HUYNHTHUAN", 
         "sfPassword": "Thuan123456",
         "sfWarehouse": "COMPUTE_WH",

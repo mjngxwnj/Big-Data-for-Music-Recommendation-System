@@ -15,7 +15,7 @@ class BackEnd:
         self._snowflake_config_rcm_db = {
             'user': 'HuynhThuan',
             'password': 'Thuan123456',
-            'account': 'sl70006.southeast-asia.azure',
+            'account': 'lv34216.southeast-asia.azure',
             'warehouse': 'COMPUTE_WH',
             'database': 'SPOTIFY_RCM_DB',
             'schema': 'SPOTIFY_RCM_SCHEMA'
@@ -23,7 +23,7 @@ class BackEnd:
         self._snowflake_config_music_db = {
             'user': 'HuynhThuan',
             'password': 'Thuan123456',
-            'account': 'sl70006.southeast-asia.azure',
+            'account': 'lv34216.southeast-asia.azure',
             'warehouse': 'COMPUTE_WH',
             'database': 'SPOTIFY_MUSIC_DB',
             'schema': 'SPOTIFY_MUSIC_SCHEMA'
