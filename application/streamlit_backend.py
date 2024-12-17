@@ -154,8 +154,8 @@ class BackEnd:
                             'TRACK_NAME': song['name'],
                             'PREVIEW': song['preview']})
         return songs
-
-    def rcm_songs_by_mood(self, mood:str, genres: str):
+ 
+    def rcm_songs_by_mood(self, mood: str, genres: str):
         cursor = self._conn_rcm_db.cursor()
         query = f"""
                     WITH RCM_MOOD_SONG AS(
@@ -164,8 +164,8 @@ class BackEnd:
                         FROM RCM_MOOD_GENRES_TABLE
                     )
                     SELECT * FROM RCM_MOOD_SONG
-                    WHERE SONG_NUM <= 2 AND MOOD = '{mood}' AND GENRES = '{genres}'
-                    LIMIT 10;
+                    WHERE SONG_NUM <= 2 AND MOOD = '{mood}' AND GENRES ILIKE '{genres}%'
+                    LIMIT 10; 
                 """
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
