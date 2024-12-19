@@ -10,7 +10,7 @@ import atexit
 
 
 class BackEnd: 
-    """ ============================================== INIT ============================================== """
+    """ ======================================= INIT ======================================= """
     def __init__(self):
         self._snowflake_config_rcm_db = {
             'user': 'HuynhThuan',
@@ -63,7 +63,7 @@ class BackEnd:
         self._spark.stop()
 
 
-    """ ============================================ EXECUTE & QUERY ============================================ """
+    """ =================================== EXECUTE & QUERY =================================== """
     def read_top_10_tracks(self):
         cursor = self._conn_music_db.cursor()
         query = """
@@ -77,6 +77,8 @@ class BackEnd:
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
         rows = [dict(zip(columns, row)) for row in cursor]
+        cursor.close()
+
         unique_names = set()
         songs = []
         for row in rows:
@@ -86,6 +88,7 @@ class BackEnd:
                 unique_names.add(ident)
         return songs
     
+
     def read_music_db(self, song_name: str = None, artist_name: str = None):
         cursor = self._conn_music_db.cursor()
         query = f"""    
@@ -106,6 +109,8 @@ class BackEnd:
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
         rows = [dict(zip(columns, row)) for row in cursor]
+        cursor.close()
+
         unique_names = set()
         songs = []
         for row in rows:
@@ -130,6 +135,8 @@ class BackEnd:
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
         rows = [dict(zip(columns, row)) for row in cursor]
+        cursor.close()
+
         unique_names = set()
         songs = []
         for row in rows:
@@ -194,10 +201,12 @@ class BackEnd:
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
         rows = [dict(zip(columns, row)) for row in cursor]
+        cursor.close()
+
         unique_names = set()
         songs = []
         for row in rows:
-            ident = (row['NAME'], row['ARTIST_NAME'])
+            ident = (row['TRACK_NAME'], row['ARTIST_NAME'])
             if ident not in unique_names:
                 songs.append(row)
                 unique_names.add(ident)

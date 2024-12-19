@@ -14,7 +14,7 @@ class Streamlit_UI():
         if "main" not in st.session_state:
             st.session_state.main = None
     
-    #======================================== MAIN UI ========================================
+    """ ======================================= MAIN UI ======================================= """
     def display_main_UI(self):
         # animation
         spotify_animation = "/app/animation/spotify_animation.gif"
@@ -180,7 +180,7 @@ class Streamlit_UI():
         st.markdown(footer_animation, unsafe_allow_html=True)
         st.markdown(subfooter, unsafe_allow_html=True)
             
-    #======================================== Search songs ========================================
+    """ ===================================== SEARCH SONGS ===================================== """
     def search_page(self):
         # ------ DESIGN WEB APP ------
         # Back button in the top-left corner
@@ -347,7 +347,7 @@ class Streamlit_UI():
     #         del st.session_state.search_page['selected_song']
     #         st.rerun()
 
-    #======================================== Recommend songs by mood ========================================
+    """ ================================ RECOMMEND SONGS BY MOOD ================================ """
     def search_by_mood(self):
         # ------ DESIGN WEB APP ------
         # Back button in the top-left corner
