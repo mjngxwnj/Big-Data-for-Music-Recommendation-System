@@ -62,7 +62,30 @@ class BackEnd:
         self._conn_rcm_db.close()
         self._spark.stop()
 
+
     """ ============================================ EXECUTE & QUERY ============================================ """
+    def read_top_10_tracks(self):
+        cursor = self._conn_music_db.cursor()
+        query = """
+                    SELECT DIM_ARTIST.NAME ARTIST_NAME, POPULARITY, FACT_TRACK.URL URL, FOLLOWERS, 
+                    TRACK_ID, FACT_TRACK.NAME TRACK_NAME, PREVIEW, LINK_IMAGE, ALBUM_ID
+                    FROM DIM_ARTIST JOIN FACT_TRACK 
+                    ON DIM_ARTIST.ID = FACT_TRACK.ARTIST_ID
+                    QUALIFY ROW_NUMBER() OVER (PARTITION BY DIM_ARTIST.ID ORDER BY TRACK_ID) = 1
+                    ORDER BY POPULARITY DESC;
+                """
+        cursor.execute(query)
+        columns = [desc[0] for desc in cursor.description]
+        rows = [dict(zip(columns, row)) for row in cursor]
+        unique_names = set()
+        songs = []
+        for row in rows:
+            ident = (row['TRACK_NAME'], row['ARTIST_NAME'])
+            if ident not in unique_names:
+                songs.append(row)
+                unique_names.add(ident)
+        return songs
+    
     def read_music_db(self, song_name: str = None, artist_name: str = None):
         cursor = self._conn_music_db.cursor()
         query = f"""    
@@ -71,8 +94,6 @@ class BackEnd:
                     FROM DIM_ARTIST JOIN FACT_TRACK 
                     ON DIM_ARTIST.ID = FACT_TRACK.ARTIST_ID
                 """
-                    # WHERE FACT_TRACK.NAME ILIKE '{song_name}%'
-                    # ORDER BY FOLLOWERS DESC; 
         if song_name and artist_name:
             query_opt = f" WHERE FACT_TRACK.NAME ILIKE '{song_name}%' AND DIM_ARTIST.NAME ILIKE '{artist_name}%' "
         elif song_name:
@@ -94,6 +115,7 @@ class BackEnd:
                 unique_names.add(ident)
         return songs
     
+
     def rcm_songs_by_album(self, track_id: str, album_id: str ):
         cursor = self._conn_music_db.cursor()
         query = f"""
@@ -117,6 +139,7 @@ class BackEnd:
                 unique_names.add(ident)
         return songs
     
+
     def rcm_songs_by_cbf(self, track_id: str, album_id: str):
         df = self._rcm_cbf_data
         track_list = df.filter(df["track_id"] == track_id)
@@ -155,6 +178,7 @@ class BackEnd:
                             'PREVIEW': song['preview']})
         return songs
  
+
     def rcm_songs_by_mood(self, mood: str, genres: str):
         cursor = self._conn_rcm_db.cursor()
         query = f"""
