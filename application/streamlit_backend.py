@@ -72,7 +72,7 @@ class BackEnd:
                     FROM DIM_ARTIST JOIN FACT_TRACK 
                     ON DIM_ARTIST.ID = FACT_TRACK.ARTIST_ID
                     QUALIFY ROW_NUMBER() OVER (PARTITION BY DIM_ARTIST.ID ORDER BY TRACK_ID) = 1
-                    ORDER BY POPULARITY DESC;
+                    ORDER BY POPULARITY DESC LIMIT 10;
                 """
         cursor.execute(query)
         columns = [desc[0] for desc in cursor.description]
@@ -97,9 +97,7 @@ class BackEnd:
                     FROM DIM_ARTIST JOIN FACT_TRACK 
                     ON DIM_ARTIST.ID = FACT_TRACK.ARTIST_ID
                 """
-        if song_name and artist_name:
-            query_opt = f" WHERE FACT_TRACK.NAME ILIKE '{song_name}%' AND DIM_ARTIST.NAME ILIKE '{artist_name}%' "
-        elif song_name:
+        if song_name:
             query_opt = f" WHERE FACT_TRACK.NAME ILIKE '{song_name}%' "
         else:
             query_opt = f" WHERE DIM_ARTIST.NAME ILIKE '{artist_name}%'"
