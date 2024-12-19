@@ -204,7 +204,7 @@ class BackEnd:
         unique_names = set()
         songs = []
         for row in rows:
-            ident = (row['TRACK_NAME'], row['ARTIST_NAME'])
+            ident = (row['NAME'], row['ARTIST_NAME'])
             if ident not in unique_names:
                 songs.append(row)
                 unique_names.add(ident)
