@@ -32,7 +32,24 @@ class Streamlit_UI():
         <style>
         .css-18e3th9 { padding-top: 0rem; padding-bottom: 10rem; padding-left: 5rem; padding-right: 5rem; }
         .css-1d391kg { padding-top: 3.5rem; padding-right: 1rem; padding-bottom: 3.5rem; padding-left: 1rem; }
-        </style>""", unsafe_allow_html=True)
+        
+        /* Style for buttons */
+        .stButton > button {
+            width: 120px /* Set width of button to 100% */
+            font-size: 20px; /* Set font size of button */
+            background-color: green;
+            color: #FFFFFF;
+            border: none; /* Remove default border */
+            border-radius: 5px; /* Add rounded corners */
+            transition: background-color 0.3s; /* Smooth transition for background color */
+        }
+
+        .stButton > button:hover {
+            background-color: black; /* Change background color on hover */
+            color: #FFFFFF;
+        }
+        </style>
+        """, unsafe_allow_html=True)
         
         # Button config
         m = st.markdown("""
@@ -51,7 +68,7 @@ class Streamlit_UI():
         page_bg = """
         <style>
         [data-testid="stAppViewContainer"] {
-            background-image: url("https://i.pinimg.com/originals/80/c3/32/80c332329f7f9b40d3ec776130813859.gif");
+            background-image: url("https://i.pinimg.com/736x/10/26/9e/10269ec42b4b3aa81bef815f8bdf521f.jpg");
             background-size: cover;
             background-attachment: fixed; /* Giữ background đứng yên */
             background-position: center;
@@ -118,37 +135,48 @@ class Streamlit_UI():
         st.markdown(line1, unsafe_allow_html = True)
 
         with st.container():
-            left_col, middle_col, right_col = st.columns([4, 1, 4])
+            left_col, middle_col, right_col = st.columns([3, 2.5, 2])
 
             with left_col:
                 if st.button("Recommend songs by artist, track, album"):
                     st.session_state.search_page = {}
                     st.rerun()
-            with right_col:
+            with middle_col:
                 if st.button("Recommend songs for your Mood"):
                     st.session_state.search_by_mood = {}
                     st.rerun()
+            with right_col:
+                if st.button("Dash Board about artists, tracks, and albums"):
+                    st.session_state.dashboard_link = "https://apc.safelink.emails.azure.net/redirect/?destination=https%3A%2F%2Fapp.powerbi.com%2FRedirect%3Faction%3DOpenLink%26linkId%3DpcEcnytrbo%26ctid%3D40127cd4-45f3-49a3-b05d-315a43a9f033%26pbi_source%3DlinkShare_meo&p=bT1jODA2NDFjMS04M2NhLTQ4MjItOTg1Ny1mZjUwZWM0Nzg5MGUmdT1hZW8mbD1SZWRpcmVjdA%3D%3D"
+                    st.rerun()
         
-        st.write("Chỗ này là mốt sẽ để 5-10 bài mà của 10 thằng nghệ sĩ top thế giới ra cho người ta ấy. Nếu m thấy ok thì để không thì thôi. Tại t thấy hơi trống")
-        ##  ---- TOP 5 SONGS OF TOP 5 ARTIST RECOMMEND FOR USERS ----          
-        # recommended_music_names, recommended_music_posters = recommend(selected_movie)
-        # col1, col2, col3, col4, col5 = st.columns(5)
-        # with col1:
-        #     st.text(recommended_music_names[0])
-        #     st.image(recommended_music_posters[0])
-        # with col2:
-        #     st.text(recommended_music_names[1])
-        #     st.image(recommended_music_posters[1])
+        ##  ---- TOP 10 SONGS OF TOP 10 ARTIST RECOMMEND FOR USERS ----    
+        st.markdown("""
+        <style>
+        .artist-image {
+            width: 150px; /* Đặt chiều rộng cố định */
+            height: 150px; /* Đặt chiều cao cố định */
+            object-fit: cover; /* Đảm bảo hình ảnh được cắt đều */
+            border-radius: 5%; /* Tùy chỉnh nếu muốn làm bo tròn */
+            margin: 10px; /* Tạo khoảng cách giữa các hình ảnh */
+        }
+        </style>
+        """, unsafe_allow_html=True)      
 
-        # with col3:
-        #     st.text(recommended_music_names[2])
-        #     st.image(recommended_music_posters[2])
-        # with col4:
-        #     st.text(recommended_music_names[3])
-        #     st.image(recommended_music_posters[3])
-        # with col5:
-        #     st.text(recommended_music_names[4])
-        #     st.image(recommended_music_posters[4])
+        top_tracks = self._backend.read_top_10_tracks()
+
+        st.title("Top 10 songs from the top artists")
+        if top_tracks:
+            for row in range(2):
+                cols = st.columns(5)
+                for col, track in zip(cols, top_tracks[row*5 : (row + 1)*5]):
+                    with col:
+                        st.markdown(
+                            f'<img class="artist-image" src="{track["LINK_IMAGE"]}" alt="Track Image">',
+                            unsafe_allow_html=True
+                        )
+                        st.write(f"**{track['TRACK_NAME']}**")
+                        st.caption(f"by {track['ARTIST_NAME']}")     
         
         # ------ FOOTER ------
         footer_style = """
@@ -156,7 +184,7 @@ class Streamlit_UI():
         .footer {
             text-align: center;
             font-size: 30px;
-            margin-top: 50px;
+            margin-top: 30px;
             color: white;
         }
         .subfooter {
@@ -206,7 +234,7 @@ class Streamlit_UI():
         search_by_name_bg = """
         <style>
         [data-testid="stAppViewContainer"] {
-            background-image: url("https://i.pinimg.com/originals/4f/90/8c/4f908c55b9e7bee05dacfdfa81a36e2f.gif");
+            background-image: url("https://i.pinimg.com/originals/58/68/6a/58686a5f8ec2aba9ece2b9a1583838b6.gif");
             background-size: cover;
             background-attachment: fixed; /* Giữ background đứng yên */
             background-position: center;
@@ -323,30 +351,6 @@ class Streamlit_UI():
                         del st.session_state.selected_song
                         st.rerun()
 
-    # def display_search(self):
-    #     song = st.session_state.search_page['selected_song']
-    #     picture_line, info_line = st.columns([1,4])
-    #     with picture_line:
-    #         st.image(song['LINK_IMAGE'])
-
-    #     with info_line:
-    #         st.write(f"### {song['TRACK_NAME']}")
-    #         st.write(f"**Artist**: {song['ARTIST_NAME']}")
-    #         st.write(f"**Followers**: {song['FOLLOWERS']}")
-    #         st.write(f"**Spotify**: {song['URL']}")
-    #     if song['PREVIEW']: st.audio(song['PREVIEW'])
-
-    #     recommend_songs = self._backend.rcm_songs_by_cbf(song['TRACK_ID'], song['ALBUM_ID'])
-    #     for rcm_song in recommend_songs:
-    #         st.write(rcm_song['TRACK_NAME'])
-    #         st.write(rcm_song['ARTIST_NAME'])
-    #         st.image(rcm_song['LINK_IMAGE'])
-    #         if rcm_song['PREVIEW']: st.audio(rcm_song['PREVIEW'])
-            
-    #     if st.button("Back"):
-    #         del st.session_state.search_page['selected_song']
-    #         st.rerun()
-
     """ ================================ RECOMMEND SONGS BY MOOD ================================ """
     def search_by_mood(self):
         # ------ DESIGN WEB APP ------
@@ -374,7 +378,7 @@ class Streamlit_UI():
         search_by_mood_bg = """
         <style>
         [data-testid="stAppViewContainer"] {
-            background-image: url("https://i.pinimg.com/736x/3b/22/2e/3b222e16b34f26ebf07f4b087cc9feff.jpg");
+            background-image: url("https://i.pinimg.com/originals/7b/ec/58/7bec589365fbdb1a95649e22e3da05c3.gif");
             background-size: cover;
             background-attachment: fixed; /* Giữ background đứng yên */
             background-position: center;
