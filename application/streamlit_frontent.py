@@ -25,8 +25,13 @@ class Streamlit_UI():
         listener = "/app/images/music.png"
         
         # ------ PAGE CONFIGURATION ------
-        st.set_page_config(page_title = "Spotiy Music Recommendation System", page_icon= ":notes:", layout= "wide")
-        
+        st.set_page_config(
+            page_title="Spotify Music Recommendations",
+            page_icon="🎵",
+            layout="wide",
+            initial_sidebar_state="expanded"
+        )
+
         # Removeing withespace from the top of the page
         st.markdown("""
         <style>
@@ -147,7 +152,7 @@ class Streamlit_UI():
                     st.rerun()
             with right_col:
                 if st.button("Dash Board about artists, tracks, and albums"):
-                    st.session_state.dashboard_link = "https://apc.safelink.emails.azure.net/redirect/?destination=https%3A%2F%2Fapp.powerbi.com%2FRedirect%3Faction%3DOpenLink%26linkId%3DpcEcnytrbo%26ctid%3D40127cd4-45f3-49a3-b05d-315a43a9f033%26pbi_source%3DlinkShare_meo&p=bT1jODA2NDFjMS04M2NhLTQ4MjItOTg1Ny1mZjUwZWM0Nzg5MGUmdT1hZW8mbD1SZWRpcmVjdA%3D%3D"
+                    st.session_state.dashboard_page = True
                     st.rerun()
         
         ##  ---- TOP 10 SONGS OF TOP 10 ARTIST RECOMMEND FOR USERS ----    
@@ -482,6 +487,31 @@ class Streamlit_UI():
                     del st.session_state.current_index
                     st.rerun()
 
+    """ ===================================== Power BI DashBoard ===================================== """
+    def dashboard_page(self):
+        # Back button in the top-left corner
+        if st.button("🏠︎ Home"):
+            del st.session_state.dashboard_page
+            st.rerun()
+
+        # Button config
+        m = st.markdown("""
+        <style>
+        div.stButton > button:first-child {
+            background-color: green;
+            color:#000000;
+        } 
+        div.stButton > button:hover {
+            background-color: black;
+            color:#FFFFFF;
+            }
+        </style>""", unsafe_allow_html=True)
+
+        st.markdown("## Dash board details about artists, tracks, and albums")
+
+        power_bi_url = "https://app.powerbi.com/reportEmbed?reportId=590ba228-6113-4df9-a6b2-1558e8de74ab&autoAuth=true&ctid=40127cd4-45f3-49a3-b05d-315a43a9f033"
+        st.components.v1.iframe(power_bi_url, width= 1400, height= 600)
+
     #======================================== Generate application ========================================
     def generate_application(self):
         if "search_page" in st.session_state:
@@ -494,6 +524,10 @@ class Streamlit_UI():
         if "search_by_mood" in st.session_state:
             self.search_by_mood()
             return 
+
+        if "dashboard_page" in st.session_state:
+            self.dashboard_page()
+            return
 
         if "main" in st.session_state:
             self.display_main_UI()
