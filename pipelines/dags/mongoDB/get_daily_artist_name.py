@@ -24,6 +24,6 @@ def load_daily_artist_name_mongoDB(Execution_date: str):
 
         daily_artist_name_data = pd.merge(old_artist_name_data, new_artist_name_data, left_on = 'Old_Artist', right_on = 'Artist', how = 'right')
         daily_artist_name_data = daily_artist_name_data[daily_artist_name_data['Old_Artist'].isnull()][['Pos', 'Artist', 'Execution_date']]
-        daily_artist_name_data = daily_artist_name_data.head(1000)
+        daily_artist_name_data = daily_artist_name_data.head(3000)
         
         client_operations.insert_data(database_name = 'music_database', collection_name = 'artist_name_collection', data = daily_artist_name_data)
