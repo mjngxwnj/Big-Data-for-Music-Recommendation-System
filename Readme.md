@@ -1,7 +1,7 @@
 # Big data for Music Recommendation System
 ## Table of Contents
-[Introduction](#introduction) 
-[Project Overview](#project-overview)
+- [Introduction](#introduction)
+- [Project Overview](#project-overview)
 ## Introduction 
 - In this day and age, music is an essential part of life, offering both entertainment and emotional connection. Our team aims to create an end-to-end date pipeline architecture that covers data collection, processing, storage, analysis, reporting, and building a recommendation system for music based on user input.
 
