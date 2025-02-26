@@ -1,8 +1,6 @@
 # Big data for Music Recommendation System
 ## Table of Contents
 1. [Introduction](#1.-introduction)  
-2. [Data Collection and Ingestion](#2.-data-collection-and-ingestion)  
-    2.1 [Web Scraping and API Data Fetching](#2.1-web-scraping-and-api-data-fetching)
 ## 1. Introduction 
 - In this day and age, music is an essential part of life, offering both entertainment and emotional connection. Our team aims to create an end-to-end date pipeline architecture that covers data collection, processing, storage, analysis, reporting, and building a recommendation system for music based on user input.
 
