@@ -84,3 +84,52 @@ def get_schema(table_name: str) -> StructType:
   
   ![incremental_load](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/incremental_load.png)
   We can see that only the data crawled on a specific day is read, processed, and stored in the Data Lake (data from previous days is not read, processed, or stored).
+#### Silver Layer Processing
+In this stage, data is read from the **Bronze Layer Data Storage** (where data has been minimally processed and schema is applied to standardize column data types). The following data processing steps are applied:
+
+- **Drop Columns**: Remove unnecessary columns.
+- **Drop Null Columns**: Drop rows containing null values based on selected subset columns.
+- **Fill Null**: Replace null values with specific values.
+- **Drop Duplicates**: Remove duplicate rows based on selected subset columns.
+- **Handle Nested Data**: Process rows with nested structures.
+- **Rename Columns**: Rename columns as needed.
+
+To simplify management and avoid repetitive data processing tasks for each table, we will create a `SilverLayer` class. This class will apply the above data processing steps for each dataset.
+
+For each table requiring processing, you simply need to apply this class and pass the necessary parameters such as the dataset, list of columns to drop, columns to rename, and the subset column to drop null values.
+```python
+""" Create SilverLayer class to process data in the Silver layer. """
+class SilverLayer:
+    #init 
+    def __init__(self, data: pyspark.sql.DataFrame, 
+                 drop_columns: list = None, 
+                 drop_null_columns: list = None,
+                 fill_nulls_columns: dict = None,
+                 duplicate_columns: list = None,
+                 nested_columns: list = None,
+                 rename_columns: dict = None,
+                 ):
+"""Initialize class attributes for data processing."""
+        self._data = data
+        self._drop_columns = drop_columns
+        self._drop_null_columns = drop_null_columns
+        self._fill_nulls_columns = fill_nulls_columns
+        self._duplicate_columns = duplicate_columns
+        self._nested_columns = nested_columns
+        self._rename_columns = rename_columns
+
+
+    """ Method to drop unnecessary columns. """
+    def drop(self):
+        self._data = self._data.drop(*self._drop_columns)
+
+    """ Method to drop rows based on null values in each column. """
+    def drop_null(self):
+        self._data = self._data.dropna(subset = self._drop_null_columns, how = "all")
+
+    """ Method to fill null values. """
+    def fill_null(self):
+        for column_list, value in self._fill_nulls_columns.items():
+            self._data = self._data.fillna(value = value, subset = column_list)
+    ...
+```
