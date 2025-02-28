@@ -192,5 +192,11 @@ Our workflow will look like this:
 ![workflow](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/workflows.PNG)  
 
 When expanded:
-![workflow_expanded](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/workflows_expand.PNG)
+![workflow_expanded](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/workflows_expand.PNG)  
+
+In this case:
+In this case:
+- **branch_task** is a task used to determine whether it is the first day the workflow is running.
+  - If it is the first day: Following the **scraping and storing** strategy (as mentioned in section 2.2), we will upload the entire CSV data to **MongoDB**.
+  - If it is not the first day (i.e., the next day after the CSV upload), we will perform daily scraping tasks to gather data on new songs from artists, including adding **3000+** new artists daily along with their complete list of tracks and albums.
 
