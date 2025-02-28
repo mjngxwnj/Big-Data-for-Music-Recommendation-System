@@ -167,9 +167,10 @@ In this schema, we will have 6 tables:
 - **Dim Album**: This table contains data about albums, including details like name, copyright, release date, etc.  
 - **Dim Track Feature**: This table holds data about the features of a track, including loudness, mode, tempo, etc.  
 - **Dim Genres**: This table contains information about the genres of music, such as pop, rock, etc.  
-- **Dim Artist-Genres**: Since the relationship between artists and genres is many-to-many (an artist can have multiple genres, and a genre can belong to multiple artists), the dim_artist_genres table acts as a bridge between the two.  
+- **Dim Artist-Genres**: Since the relationship between artists and genres is many-to-many (an artist can have multiple genres, and a genre can belong to multiple artists), the dim_artist_genres table acts as a bridge between the two.
+  
 Thus, we will take the cleaned data from the Silver Layer Storage and perform several join and aggregation operations to obtain a dataset organized according to the schema we have prepared. Through the steps of joining tables and removing unnecessary columns, while also creating primary and foreign key columns for each table, we will save the entire dataset into the Gold Layer Storage.  
 #### 4. Data Warehouse Storing
-In this project, the chosen Data Warehouse will be Snowflake, a cloud-based data warehouse. Snowflake is quite powerful for storing clean data, reporting, and analytics.
-Once the dataset in the Gold Layer is completed, we will need to initialize the Database, Schema, and Tables in the Snowflake Data Warehouse. Then, we will load the entire data from the Gold Layer into Snowflake. To simplify, we will use Spark to read the data stored in the Gold Layer Storage within the Data Lake, and then load the data into the Data Warehouse.  
-After loading the entire dataset into Snowflake, we will log into the Snowflake account and we will see the tables that have been uploaded.
+- In this project, the chosen Data Warehouse will be Snowflake, a cloud-based data warehouse. Snowflake is quite powerful for storing clean data, reporting, and analytics.
+- Once the dataset in the Gold Layer is completed, we will need to initialize the Database, Schema, and Tables in the Snowflake Data Warehouse. Then, we will load the entire data from the Gold Layer into Snowflake.
+- After loading the entire dataset into Snowflake, we will log into the Snowflake account and we will see the tables that have been uploaded.
