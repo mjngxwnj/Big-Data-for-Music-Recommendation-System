@@ -226,5 +226,5 @@ After completing a fully functional data pipeline system, we will visualize and 
 - Additionally, by analyzing album release dates, we can determine the active years of each artist. We will visualize and analyze the artists with the longest careers based on their album release dates.
   
   ![artist_longevity](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/artist_longevity.png)
-
-- 
+  
+These are some basic insights we can gather through the analysis and visualization of our dataset. The full source code and other analyses can be found in the `notebook/EDA.ipynb` folder.
