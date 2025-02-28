@@ -273,9 +273,7 @@ K-means is an unsupervised machine learning algorithm used for clustering data i
 **Step 1: Z-score Normalization**
 - We use Z-score to standardize numerical features, ensuring all values have the same weight and preventing bias towards features with larger ranges.
 - **Formula**:
-  \[
-  Z = \frac{x - \mu}{\sigma}
-  \]
+  
   where \(x\) is the original value, \(\mu\) is the mean, and \(\sigma\) is the standard deviation.
 
 **Step 2: Apply K-means**
