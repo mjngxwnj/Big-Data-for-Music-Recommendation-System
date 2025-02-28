@@ -171,12 +171,16 @@ In this schema, we will have 6 tables:
   
 Thus, we will take the cleaned data from the Silver Layer Storage and perform several join and aggregation operations to obtain a dataset organized according to the schema we have prepared. Through the steps of joining tables and removing unnecessary columns, while also creating primary and foreign key columns for each table, we will save the entire dataset into the Gold Layer Storage.  
 #### 4. Data Warehouse Storing
-- In this project, the chosen Data Warehouse will be Snowflake, a cloud-based data warehouse. Snowflake is quite powerful for storing clean data, reporting, and analytics.
-- Once the dataset in the Gold Layer is completed, we will need to initialize the Database, Schema, and Tables in the Snowflake Data Warehouse. Then, we will load the entire data from the Gold Layer into Snowflake.
-- After loading the entire dataset into Snowflake, we will log into the Snowflake account and we will see the tables that have been uploaded.
+- In this project, the chosen **Data Warehouse** will be **Snowflake**, a cloud-based data warehouse. **Snowflake** is quite powerful for storing clean data, reporting, and analytics.
+- Once the dataset in the **Gold Layer** is completed, we will need to initialize the **Database**, Schema, and Tables in the **Snowflake** Data Warehouse. Then, we will load the entire data from the **Gold Layer** into **Snowflake**.
+- After loading the entire dataset into **Snowflake**, we will log into the **Snowflake** account and we will see the tables that have been uploaded.
+
+- 
   ![snowflake](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/snowflake.PNG)
   ![data_warehouse](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/data_warehouse.PNG)
+  
 - Once the datasets are completed, we will create dashboards and reports using Power BI. These dashboards will help users easily access and visualize the dataset we have.
+- 
   ![dashboard1](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/powerbi_1.jpg)
   ![dashboard2](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/powerbi_2.jpg)
   ![dashboard3](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/powerbi_3.jpg)
