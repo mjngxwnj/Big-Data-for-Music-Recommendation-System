@@ -78,8 +78,8 @@ def get_schema(table_name: str) -> StructType:
     #applying struct type
     artist_schema = StructType(artist_schema)
 ```
-Similarly, schemas will be defined for the Album, Track, and Track Feature tables.
+  Similarly, schemas will be defined for the Album, Track, and Track Feature tables.
 - Additionally, during this process, we will apply an **Incremental Load strategy** based on the Execution_date column to load data daily. This helps minimize the amount of data that needs to be processed, transformed, and loaded.
   
   ![incremental_load](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/incremental_load.png)
-- We can see that only the data crawled on a specific day is read, processed, and stored in the Data Lake (data from previous days is not read, processed, or stored).
+  We can see that only the data crawled on a specific day is read, processed, and stored in the Data Lake (data from previous days is not read, processed, or stored).
