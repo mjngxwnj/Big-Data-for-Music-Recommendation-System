@@ -230,7 +230,6 @@ After completing a fully functional data pipeline system, we will visualize and 
 These are some basic insights we can gather through the analysis and visualization of our dataset. The full source code and other analyses can be found in the `notebook/EDA.ipynb` folder.
 
 ### Machine Learning for Recommendation System
-#### Overview:
 In building the recommendation model, we will offer two options for users. Each option will correspond to a different algorithm that we will implement. The first algorithm will be **"Content-Based Filtering (CBF)"**, and the second one will be a popular algorithm, **"K-means clustering"**.
 
 #### Building model using Content-Based Filtering (CBF)
@@ -239,22 +238,27 @@ In building the recommendation model, we will offer two options for users. Each 
 - Notably, the model doesn't require any data about other users, as the recommendations are specific to the individual user.
 - This makes it easier to scale for more users. The model can capture specific user preferences and recommend items that may be of interest to the user but are less popular among other users.
   
-1. **Step 1: Data Preprocessing**
+**Step 1: Data Preprocessing**
    - Replace null values in the "genres" column with empty strings (`""`).
    - Use **Tokenizer** to split genres into individual words stored in a vector.
    - Apply **CountVectorizer** to count the frequency of each genre token.
 
-2. **Step 2: Vectorization with CountVectorizer**
+**Step 2: Vectorization with CountVectorizer**
    - Tokenize genres and convert them into a sparse matrix where each row represents a song's genre frequencies.
    - CountVectorizer automatically handles case insensitivity and word position.
-
-3. **Step 3: Feature Scaling**
+     
+     ![matrix](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/CountVectorizer.png)
+     
+**Step 3: Feature Scaling**
    - Apply **Min-Max Scaler** to normalize numerical features (e.g., energy, tempo) into the range [0, 1] to prevent bias during model training.
-
-4. **Step 4: Recommendation Process**
+     
+     ![min_max_scaler](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/min_max_scaler.png)
+     
+**Step 4: Recommendation Process**
    - **Case 1**: If a song's genre is empty, recommend random tracks from the same album.
    - **Case 2**: For tracks with unique genres, extract non-redundant genres and recommend tracks with similar genres.
    - Calculate **Cosine Similarity** between the selected song and others in the dataset, then recommend the top tracks based on the similarity scores.
    - Cosine similarity values range from [0, 1], with higher values indicating greater similarity.
-
+     
+     ![cosine_similarity](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/cosine_similarity.png)
 
