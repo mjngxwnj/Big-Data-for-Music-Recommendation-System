@@ -176,3 +176,7 @@ Thus, we will take the cleaned data from the Silver Layer Storage and perform se
 - After loading the entire dataset into Snowflake, we will log into the Snowflake account and we will see the tables that have been uploaded.
   ![snowflake](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/snowflake.PNG)
   ![data_warehouse](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/data_warehouse.PNG)
+- Once the datasets are completed, we will create dashboards and reports using Power BI. These dashboards will help users easily access and visualize the dataset we have.
+  ![dashboard1](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/powerbi_1.jpg)
+  ![dashboard2](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/powerbi_2.jpg)
+  ![dashboard3](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/powerbi_3.jpg)
