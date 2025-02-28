@@ -174,3 +174,5 @@ Thus, we will take the cleaned data from the Silver Layer Storage and perform se
 - In this project, the chosen Data Warehouse will be Snowflake, a cloud-based data warehouse. Snowflake is quite powerful for storing clean data, reporting, and analytics.
 - Once the dataset in the Gold Layer is completed, we will need to initialize the Database, Schema, and Tables in the Snowflake Data Warehouse. Then, we will load the entire data from the Gold Layer into Snowflake.
 - After loading the entire dataset into Snowflake, we will log into the Snowflake account and we will see the tables that have been uploaded.
+  ![snowflake](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/snowflake.PNG)
+  ![data_warehouse](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/data_warehouse.PNG)
