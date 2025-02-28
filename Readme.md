@@ -21,6 +21,10 @@ The data source is initially collected from https://kworb.net/itunes/extended.ht
 - **Airflow**: A framework that uses Python to schedule and run tasks.
 ### Directory Structure
 ![directory](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/directories.PNG)
+
+### Demo
+![demo](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/demo.gif)
+
 ## Project Overview
 ### Data Collection and Ingestion
 The data collection and ingestion process involves retrieving information from **Kworb.net** and **Spotify API**, then storing it in **MongoDB**.
@@ -276,7 +280,7 @@ K-means is an unsupervised machine learning algorithm used for clustering data i
   
   ![z_score](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/Z_score.png)
   
-  where \(x\) is the original value, \(\mu\) is the mean, and \(\sigma\) is the standard deviation.
+  where **x** is the original value, **μ** is the mean, and **σ** is the standard deviation.
 
 **Step 2: Apply K-means**
 - Select key numerical features and label songs as **Happy**, **Sad**, or **Neutral** based on their characteristics.
@@ -293,5 +297,4 @@ K-means is an unsupervised machine learning algorithm used for clustering data i
   
   ![PCA_visualization](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/PCA_visualization.png)
 
-### Demo Video
-![demo](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/demo.gif)
+### _**Feel free to use!**_
