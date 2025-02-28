@@ -10,8 +10,6 @@ The data source is initially collected from https://kworb.net/itunes/extended.ht
 
 ### Architecture
 ![My Image](./images/Architecture.png)
-- **Link**: To explore the full source code, feel free to check out our GitHub repository:  
-*https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System*
 
 ### Tools
 - **Python**: Main programming language.
@@ -21,3 +19,25 @@ The data source is initially collected from https://kworb.net/itunes/extended.ht
 - **Snowflake**: Cloud-Based Data Warehouse.
 - **PowerBI**: A tool for displaying data and providing comprehensive overview.
 - **Airflow**: A framework that uses Python to schedule and run tasks.
+### Directory Structure
+![directory](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/directories.PNG)
+## Project Overview
+### Data Collection and Ingestion
+The data collection and ingestion process involves retrieving information from Kworb.net and Spotify API, then storing it in MongoDB.
+#### 1.Retrieving Data from Kworb.net
+- Use `pandas.read_html(url)` to extract tables from the website.
+- Select the first table and extract two columns: `Pos` (ranking position) and `Artist` (artist name).
+- Store the list of `15,000` artists in MongoDB.
+#### 2. Fetching Artist Information from Spotify API
+- Use Spotipy to connect to the Spotify API with Client ID and Client Secret.
+- Call `sp.search ` to retrieve artist details by name and store the data in MongoDB.
+#### 3. Retrieving Album and Track Information
+- Use the artist ID to fetch a list of album IDs via sp.artist_albums.
+- Split the album list into smaller chunks to optimize API calls.
+- Use `sp.album` to retrieve 20 albums and their tracks in a single API request.
+- Store album and track data in MongoDB.
+#### 4. Fetching Track Features
+- Retrieve track IDs from the previous step to fetch track feature data.
+- Split the track ID list into smaller chunks.
+- Use `sp.audio_feature` to retrieve 100 track features per API request.
+- Store the extracted data in MongoDB.
