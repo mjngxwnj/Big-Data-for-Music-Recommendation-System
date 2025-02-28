@@ -195,8 +195,13 @@ When expanded:
 ![workflow_expanded](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/workflows_expand.PNG)  
 
 In this case:
-In this case:
 - **branch_task** is a task used to determine whether it is the first day the workflow is running.
   - If it is the first day: Following the **scraping and storing** strategy (as mentioned in section 2.2), we will upload the entire CSV data to **MongoDB**.
   - If it is not the first day (i.e., the next day after the CSV upload), we will perform daily scraping tasks to gather data on new songs from artists, including adding **3000+** new artists daily along with their complete list of tracks and albums.
+- **initial_task**: Task to upload the entire CSV files to **MongoDB**.
+- **crawl_spotify_data_taskgroup**: Task group responsible for scraping data from the **Spotify API** to gather information on **artists, albums, tracks, and track features**.
+- **ETL_HDFS_taskgroup**: Task group to perform the **three-layer processing** in **HDFS**.
+- **create_database_schema_task**: Task group for creating **databases, schemas, and tables** in **Snowflake**.
+- **warehouse_load_task**: Task to load the entire dataset from **the Gold Layer** into the **data warehouse**.
+
 
