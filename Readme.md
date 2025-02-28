@@ -41,6 +41,7 @@ The data collection and ingestion process involves retrieving information from *
 - Split the track ID list into smaller chunks.
 - Use `sp.audio_feature` to retrieve 100 track features per API request.
 - Store the extracted data in MongoDB.
+- 
   ![crawl_api](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/crawl_api.jpg)
 ### Daily Data Scraping and Storing Strategy
 #### 1. Initial Data Scraping and Storing
