@@ -41,7 +41,7 @@ The data collection and ingestion process involves retrieving information from *
 - Split the track ID list into smaller chunks.
 - Use `sp.audio_feature` to retrieve 100 track features per API request.
 - Store the extracted data in MongoDB.
-- 
+  
   ![crawl_api](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/crawl_api.jpg)
 ### Daily Data Scraping and Storing Strategy
 #### 1. Initial Data Scraping and Storing
@@ -54,3 +54,27 @@ The data collection and ingestion process involves retrieving information from *
 - New artist names are stored in **MongoDB**, then retrieved to call the **Spotify API** to fetch artist, album, and track data, which is also stored in **MongoDB**. We add an **execute_date** column to track the data execution date and ensure that only the latest data is used for API calls, preventing redundant requests for past data.
   
   ![daily_crawl](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/daily_crawl_data.png)
+### Three-Layer Data Lake Processing
+#### 1. Three-Layer Data Lake Processing
+We use HDFS (Hadoop Distributed File System) to store processed and transformed datasets, forming our Data Lake.
+#### 2. Data Lake Architecture
+Our data lake processing system is designed with three main layers: **Bronze, Silver, and Gold**. Each layer plays a crucial role in storing and processing data at different levels for **analysis**, **reporting**, and **Machine Learning model building**.
+- The defined schemas (PySpark Schema) are structured as follows:
+```python
+""" Function for getting schemas. """
+def get_schema(table_name: str) -> StructType:
+    """ Artist schema. """
+    artist_schema = [StructField('Artist_ID',     StringType(), True),
+                    StructField('Artist_Name',    StringType(), True),
+                    StructField('Genres',         ArrayType(StringType(), True), True),
+                    StructField('Followers',      IntegerType(), True),
+                    StructField('Popularity',     IntegerType(), True),
+                    StructField('Artist_Image',   StringType(), True),
+                    StructField('Artist_Type',    StringType(), True),
+                    StructField('External_Url',   StringType(), True),
+                    StructField('Href',           StringType(), True),
+                    StructField('Artist_Uri',     StringType(), True),
+                    StructField('Execution_date', DateType(), True)]
+    #applying struct type
+    artist_schema = StructType(artist_schema)
+```
