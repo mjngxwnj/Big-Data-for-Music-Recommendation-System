@@ -228,3 +228,7 @@ After completing a fully functional data pipeline system, we will visualize and 
   ![artist_longevity](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/artist_longevity.png)
   
 These are some basic insights we can gather through the analysis and visualization of our dataset. The full source code and other analyses can be found in the `notebook/EDA.ipynb` folder.
+
+### Machine Learning for Recommendation System
+#### Overview:
+In building the recommendation model, we will offer two options for users. Each option will correspond to a different algorithm that we will implement. The first algorithm will be **"Content-Based Filtering (CBF)"**, and the second one will be a popular algorithm, **"K-means clustering"**.
