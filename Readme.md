@@ -124,12 +124,8 @@ class SilverLayer:
         self._data = self._data.drop(*self._drop_columns)
 
     """ Method to drop rows based on null values in each column. """
-    def drop_null(self):
-        self._data = self._data.dropna(subset = self._drop_null_columns, how = "all")
+    ...
 
     """ Method to fill null values. """
-    def fill_null(self):
-        for column_list, value in self._fill_nulls_columns.items():
-            self._data = self._data.fillna(value = value, subset = column_list)
     ...
 ```
