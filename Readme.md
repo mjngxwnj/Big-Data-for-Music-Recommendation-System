@@ -61,16 +61,6 @@ Our **Data Lake Processing System** consists of three main layers: **Bronze, Sil
 At this stage, data is extracted from **MongoDB** after being collected from the **Spotify API**. This includes details about **artists, albums, tracks, and track features**. 
 - The defined schemas (PySpark Schema) will be structured as follows:
 ```python
-from pyspark.sql.types import StructType, StructField, StringType, IntegerType, FloatType
-
-artist_schema = StructType([
-    StructField("artist_id", StringType(), True),
-    StructField("name", StringType(), True),
-    StructField("popularity", IntegerType(), True),
-    StructField("followers", IntegerType(), True),
-    StructField("genres", StringType(), True)
-])
-```python
 """ Function for getting schemas. """
 def get_schema(table_name: str) -> StructType:
     """ Artist schema. """
