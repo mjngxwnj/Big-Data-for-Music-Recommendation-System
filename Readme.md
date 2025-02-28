@@ -274,6 +274,8 @@ K-means is an unsupervised machine learning algorithm used for clustering data i
 - We use Z-score to standardize numerical features, ensuring all values have the same weight and preventing bias towards features with larger ranges.
 - **Formula**:
   
+  ![z_score](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/Z_score.png)
+  
   where \(x\) is the original value, \(\mu\) is the mean, and \(\sigma\) is the standard deviation.
 
 **Step 2: Apply K-means**
@@ -282,7 +284,11 @@ K-means is an unsupervised machine learning algorithm used for clustering data i
   - **Happy**: High valence, energy, and danceability.
   - **Sad**: Low valence, energy, danceability, but high acousticness.
   - **Neutral**: All other cases.
-
+    
+  ![kmeans_output](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/k-means_output.png)
+  
 **Step 3: PCA for Visualization**
 - Apply **Principal Component Analysis (PCA)** to reduce dimensionality and visualize the data in 2D.
 - PCA helps retain maximum variance while reducing data complexity. We plot 1% of the dataset to visualize clusters after applying PCA.
+  
+  ![PCA_visualization](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/PCA_visualization.png)
