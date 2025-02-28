@@ -292,4 +292,19 @@ K-means is an unsupervised machine learning algorithm used for clustering data i
 - PCA helps retain maximum variance while reducing data complexity. We plot 1% of the dataset to visualize clusters after applying PCA.
   
   ![PCA_visualization](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/PCA_visualization.png)
-[![Watch the video](https://img.youtube.com/vi/APOPm01BVrk/hqdefault.jpg)](https://www.youtube.com/embed/APOPm01BVrk)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
