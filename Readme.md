@@ -55,11 +55,21 @@ The data collection and ingestion process involves retrieving information from *
   
   ![daily_crawl](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/daily_crawl_data.png)
 ### Three-Layer Data Lake Processing
-#### 1. Three-Layer Data Lake Processing
-We use HDFS (Hadoop Distributed File System) to store processed and transformed datasets, forming our Data Lake.
-#### 2. Data Lake Architecture
-Our data lake processing system is designed with three main layers: **Bronze, Silver, and Gold**. Each layer plays a crucial role in storing and processing data at different levels for **analysis**, **reporting**, and **Machine Learning model building**.
-- The defined schemas (PySpark Schema) are structured as follows:
+We use **HDFS (Hadoop Distributed File System)** to store processed and transformed datasets, collectively referred to as the **Data Lake**.
+Our **Data Lake Processing System** consists of three main layers: **Bronze, Silver, and Gold**. Each layer plays a critical role in storing and refining data for analysis, reporting, and Machine Learning.
+#### Bronze Layer Processing
+At this stage, data is extracted from **MongoDB** after being collected from the **Spotify API**. This includes details about **artists, albums, tracks, and track features**. 
+- The defined schemas (PySpark Schema) will be structured as follows:
+```python
+from pyspark.sql.types import StructType, StructField, StringType, IntegerType, FloatType
+
+artist_schema = StructType([
+    StructField("artist_id", StringType(), True),
+    StructField("name", StringType(), True),
+    StructField("popularity", IntegerType(), True),
+    StructField("followers", IntegerType(), True),
+    StructField("genres", StringType(), True)
+])
 ```python
 """ Function for getting schemas. """
 def get_schema(table_name: str) -> StructType:
