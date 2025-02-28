@@ -293,18 +293,4 @@ K-means is an unsupervised machine learning algorithm used for clustering data i
   
   ![PCA_visualization](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/PCA_visualization.png)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
+![demo](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/demo.gif)
