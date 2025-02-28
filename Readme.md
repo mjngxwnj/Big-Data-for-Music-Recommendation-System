@@ -160,13 +160,14 @@ At this stage, after the data has been processed in the Silver Layer, we will pe
 - This is the schema we aim to achieve:
   
   ![schema](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/schema.jpg)
-In this schema, we will have 6 tables:  
-**Fact Track**: This is the main table of the dataset, containing information about all the tracks, with foreign key columns linking to the primary keys of the other tables.  
-**Dim Artist**: This is the table containing data about the artists and their corresponding information.  
-**Dim Album**: This table contains data about albums, including details like name, copyright, release date, etc.  
-**Dim Track Feature**: This table holds data about the features of a track, including loudness, mode, tempo, etc.  
-**Dim Genres**: This table contains information about the genres of music, such as pop, rock, etc.  
-**Dim Artist-Genres**: Since the relationship between artists and genres is many-to-many (an artist can have multiple genres, and a genre can belong to multiple artists), the dim_artist_genres table acts as a bridge between the two.  
+  
+In this schema, we will have 6 tables:
+- **Fact Track**: This is the main table of the dataset, containing information about all the tracks, with foreign key columns linking to the primary keys of the other tables.  
+- **Dim Artist**: This is the table containing data about the artists and their corresponding information.  
+- **Dim Album**: This table contains data about albums, including details like name, copyright, release date, etc.  
+- **Dim Track Feature**: This table holds data about the features of a track, including loudness, mode, tempo, etc.  
+- **Dim Genres**: This table contains information about the genres of music, such as pop, rock, etc.  
+- **Dim Artist-Genres**: Since the relationship between artists and genres is many-to-many (an artist can have multiple genres, and a genre can belong to multiple artists), the dim_artist_genres table acts as a bridge between the two.  
 Thus, we will take the cleaned data from the Silver Layer Storage and perform several join and aggregation operations to obtain a dataset organized according to the schema we have prepared. Through the steps of joining tables and removing unnecessary columns, while also creating primary and foreign key columns for each table, we will save the entire dataset into the Gold Layer Storage.  
 #### 4. Data Warehouse Storing
 In this project, the chosen Data Warehouse will be Snowflake, a cloud-based data warehouse. Snowflake is quite powerful for storing clean data, reporting, and analytics.
