@@ -22,7 +22,7 @@ The data source is initially collected from https://kworb.net/itunes/extended.ht
 ### Directory Structure
 ![directory](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/directories.PNG)
 
-### Demo
+### Application Demo
 ![demo](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/demo.gif)
 
 ## Project Overview
