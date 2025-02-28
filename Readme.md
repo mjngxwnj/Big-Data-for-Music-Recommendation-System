@@ -57,7 +57,7 @@ The data collection and ingestion process involves retrieving information from *
 ### Three-Layer Data Lake Processing
 We use **HDFS (Hadoop Distributed File System)** to store processed and transformed datasets, collectively referred to as the **Data Lake**.
 Our **Data Lake Processing System** consists of three main layers: **Bronze, Silver, and Gold**. Each layer plays a critical role in storing and refining data for analysis, reporting, and Machine Learning.
-#### Bronze Layer Processing
+#### 1. Bronze Layer Processing
 At this stage, data is extracted from **MongoDB** after being collected from the **Spotify API**. This includes details about **artists, albums, tracks, and track features**. 
 - The defined schemas (PySpark Schema) will be structured as follows:
 ```python
@@ -84,7 +84,7 @@ def get_schema(table_name: str) -> StructType:
   
   ![incremental_load](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/incremental_load.png)
   We can see that only the data crawled on a specific day is read, processed, and stored in the Data Lake (data from previous days is not read, processed, or stored).
-#### Silver Layer Processing
+#### 2. Silver Layer Processing
 In this stage, data is read from the **Bronze Layer Data Storage** (where data has been minimally processed and schema is applied to standardize column data types). The following data processing steps are applied:
 
 - **Drop Columns**: Remove unnecessary columns.
@@ -154,8 +154,21 @@ silver_artist = SilverLayer(data = bronze_artist,
     silver_artist = silver_artist.process()
     print("Finished processing for 'silver_artist'.")
 ```
-#### Gold Layer Processing
+#### 3. Gold Layer Processing
 At this stage, after the data has been processed in the Silver Layer, we will perform the process of combining tables to create a schema that follows the Snowflake structure, normalized to the highest level—3NF. In this schema, the fact table will be the track table, and this schema will be applied to organize the data in the Data Warehouse.
 
 - This is the schema we aim to achieve:
+  
   ![schema](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/schema.jpg)
+In this schema, we will have 6 tables:
+**Fact Track**: This is the main table of the dataset, containing information about all the tracks, with foreign key columns linking to the primary keys of the other tables.
+**Dim Artist**: This is the table containing data about the artists and their corresponding information.
+**Dim Album**: This table contains data about albums, including details like name, copyright, release date, etc.
+**Dim Track Feature**: This table holds data about the features of a track, including loudness, mode, tempo, etc.
+**Dim Genres**: This table contains information about the genres of music, such as pop, rock, etc.
+**Dim Artist-Genres**: Since the relationship between artists and genres is many-to-many (an artist can have multiple genres, and a genre can belong to multiple artists), the dim_artist_genres table acts as a bridge between the two.
+Thus, we will take the cleaned data from the Silver Layer Storage and perform several join and aggregation operations to obtain a dataset organized according to the schema we have prepared. Through the steps of joining tables and removing unnecessary columns, while also creating primary and foreign key columns for each table, we will save the entire dataset into the Gold Layer Storage.
+#### 4. Data Warehouse Storing
+In this project, the chosen Data Warehouse will be Snowflake, a cloud-based data warehouse. Snowflake is quite powerful for storing clean data, reporting, and analytics.
+Once the dataset in the Gold Layer is completed, we will need to initialize the Database, Schema, and Tables in the Snowflake Data Warehouse. Then, we will load the entire data from the Gold Layer into Snowflake. To simplify, we will use Spark to read the data stored in the Gold Layer Storage within the Data Lake, and then load the data into the Data Warehouse.
+After loading the entire dataset into Snowflake, we will log into the Snowflake account and we will see the tables that have been uploaded.
