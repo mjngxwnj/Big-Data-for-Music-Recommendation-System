@@ -78,6 +78,7 @@ def get_schema(table_name: str) -> StructType:
     #applying struct type
     artist_schema = StructType(artist_schema)
 ```
+
   Similarly, schemas will be defined for the Album, Track, and Track Feature tables.
 - Additionally, during this process, we will apply an **Incremental Load strategy** based on the Execution_date column to load data daily. This helps minimize the amount of data that needs to be processed, transformed, and loaded.
   
