@@ -154,3 +154,8 @@ silver_artist = SilverLayer(data = bronze_artist,
     silver_artist = silver_artist.process()
     print("Finished processing for 'silver_artist'.")
 ```
+#### Gold Layer Processing
+At this stage, after the data has been processed in the Silver Layer, we will perform the process of combining tables to create a schema that follows the Snowflake structure, normalized to the highest level—3NF. In this schema, the fact table will be the track table, and this schema will be applied to organize the data in the Data Warehouse.
+
+- This is the schema we aim to achieve:
+  ![schema](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/schema.jpg)
