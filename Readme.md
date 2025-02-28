@@ -135,19 +135,19 @@ The data processing function in the Silver Layer:
 ```python
 silver_artist = SilverLayer(data = bronze_artist, 
                             drop_columns       = ['Artist_Type', 'Href', 
-                                                    'Artist_Uri', 'Execution_date'],
+                                                  'Artist_Uri', 'Execution_date'],
                             drop_null_columns  = ['Artist_ID'], 
                             fill_nulls_columns = {'Followers': 0,
-                                                    'Popularity': 0},
+                                                  'Popularity': 0},
                             duplicate_columns  = ['Artist_ID'],
                             nested_columns     = ['Genres'],
                             rename_columns     = {'Artist_ID': 'id',
-                                                    'Artist_Name': 'name',
-                                                    'Genres': 'genres',
-                                                    'Followers': 'followers',
-                                                    'Popularity': 'popularity',
-                                                    'Artist_Image': 'link_image',
-                                                    'External_Url': 'url'})
+                                                  'Artist_Name': 'name',
+                                                  'Genres': 'genres',
+                                                  'Followers': 'followers',
+                                                  'Popularity': 'popularity',
+                                                  'Artist_Image': 'link_image',
+                                                  'External_Url': 'url'})
     
     """ Call the process method of SilverLayer to perform data processing """
     print("Processing for 'silver_artist' ...")
