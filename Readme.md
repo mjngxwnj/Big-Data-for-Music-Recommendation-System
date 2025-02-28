@@ -204,4 +204,27 @@ In this case:
 - **create_database_schema_task**: Task group for creating **databases, schemas, and tables** in **Snowflake**.
 - **warehouse_load_task**: Task to load the entire dataset from **the Gold Layer** into the **data warehouse**.
 
+### Exploratory Data Analysis (EDA)
+After completing a fully functional data pipeline system, we will visualize and analyze our dataset. The dataset used for EDA will be taken from the Silver Layer to ensure that the important columns are still intact, making it easier to join tables and perform analysis.
 
+- We will group artists by their popularity and select the top 100 most popular ones. Then, we will use a WordCloud to visualize the data. In the WordCloud, the size of each artist's name will correspond to their popularity, with larger names indicating higher popularity.
+  
+  ![word_cloud](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/wordcloud_artist.png)
+  
+- Next, we will plot a bar chart of artists, but this time based on the number of followers each artist has on Spotify. From the analysis, we will observe that the artist with the highest number of followers is Arijit Singh from India.
+  
+  ![top_followers](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/top_followers.png)
+
+- Next, we will group the songs by their genre, count the occurrences of each genre, and select the top 5 most frequent genres in the dataset. The most popular genre is "pop," but it's interesting to note that "rap" ranks in the top 5, indicating its rapid growth.
+  
+  ![popular_genres](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/popular_genres.png)
+  
+- We will count albums released before and after 2000, showing a growing music market with more albums released each year.
+  
+  ![album_released](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/albums_released.png)
+
+- Additionally, by analyzing album release dates, we can determine the active years of each artist. We will visualize and analyze the artists with the longest careers based on their album release dates.
+  
+  ![artist_longevity](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/artist_longevity.png)
+
+- 
