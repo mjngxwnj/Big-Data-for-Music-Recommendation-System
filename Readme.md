@@ -51,4 +51,5 @@ The data collection and ingestion process involves retrieving information from *
   ![left_anti_join](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/leftanti_join_artistname.png)
 - This strategy ensures that we only fetch **new artists** to call the **Spotify API** and retrieve album and track information, minimizing duplicates and reducing API requests. (After performing the **Left Anti Join**, the number of daily artist names is around **3,000**).
 - New artist names are stored in **MongoDB**, then retrieved to call the **Spotify API** to fetch artist, album, and track data, which is also stored in **MongoDB**. We add an **execute_date** column to track the data execution date and ensure that only the latest data is used for API calls, preventing redundant requests for past data.
+  
   ![daily_crawl](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/daily_crawl_data.png)
