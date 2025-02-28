@@ -1,6 +1,10 @@
 # Big data for Music Recommendation System
 ## Table of Contents
 - [Introduction](#introduction)
+  - [Data Sources](#data-sources)
+  - [Architecture](#architecture)
+  - [Tools](#tools)
+  - [Directory Structure](#directory-structure)
 - [Project Overview](#project-overview)
   - [Data Collection and Ingestion](#data-collection-and-ingestion)
     - [1. Fetching Data from Kworb.net](#1-fetching-data-from-kworbnet)
