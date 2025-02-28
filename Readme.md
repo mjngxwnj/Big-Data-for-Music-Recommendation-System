@@ -232,7 +232,7 @@ These are some basic insights we can gather through the analysis and visualizati
 ### Machine Learning for Recommendation System
 In building the recommendation model, we will offer two options for users. Each option will correspond to a different algorithm that we will implement. The first algorithm will be **"Content-Based Filtering (CBF)"**, and the second one will be a popular algorithm, **"K-means clustering"**.
 
-#### Building model using Content-Based Filtering (CBF)
+#### 1. Building model using Content-Based Filtering (CBF)
 - **Content-Based Filtering (CBF)** provides personalized recommendations by focusing on individual preferences and tailoring options effectively to align with the unique interests and concerns of each user.
 - This is typically achieved using techniques like **cosine similarity**, which measures the similarity between a user's vector (representing their preferences) and the profile of the item.
 - Notably, the model doesn't require any data about other users, as the recommendations are specific to the individual user.
@@ -261,4 +261,30 @@ In building the recommendation model, we will offer two options for users. Each 
    - Cosine similarity values range from [0, 1], with higher values indicating greater similarity.
      
      ![cosine_similarity](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/cosine_similarity.png)
+#### 2. Build model using K-means clustering
+K-means is an unsupervised machine learning algorithm used for clustering data into distinct groups based on similarity in features. The algorithm works iteratively to assign data points to one of the k clusters by minimizing variance within each cluster. This makes it particularly effective for segmenting data with inherent patterns, such as grouping songs based on their emotional characteristics.
 
+**Key Features of K-means:**
+- **Cluster Centroid**: Each cluster is represented by a centroid, which is the average value of all data points within the cluster.
+- **Predefined k**: The number of clusters (k) is specified beforehand based on the problem's requirements.
+- **Minimizing Variance**: K-means ensures that similar data points are grouped together, facilitating pattern discovery.
+- The main goal of applying K-means is to classify songs into three distinct emotional categories - **Happy**, **Sad**, and **Neutral** - based on their audio features. This clustering allows for mood-based song recommendations, enabling users to receive suggestions tailored to their emotional state.
+
+**Step 1: Z-score Normalization**
+- We use Z-score to standardize numerical features, ensuring all values have the same weight and preventing bias towards features with larger ranges.
+- **Formula**:
+  \[
+  Z = \frac{x - \mu}{\sigma}
+  \]
+  where \(x\) is the original value, \(\mu\) is the mean, and \(\sigma\) is the standard deviation.
+
+**Step 2: Apply K-means**
+- Select key numerical features and label songs as **Happy**, **Sad**, or **Neutral** based on their characteristics.
+- Set \(k=3\) for the three emotional categories. K-means calculates centroids for each cluster based on selected audio features, like valence, energy, and danceability:
+  - **Happy**: High valence, energy, and danceability.
+  - **Sad**: Low valence, energy, danceability, but high acousticness.
+  - **Neutral**: All other cases.
+
+**Step 3: PCA for Visualization**
+- Apply **Principal Component Analysis (PCA)** to reduce dimensionality and visualize the data in 2D.
+- PCA helps retain maximum variance while reducing data complexity. We plot 1% of the dataset to visualize clusters after applying PCA.
