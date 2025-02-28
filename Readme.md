@@ -41,17 +41,15 @@ The data collection and ingestion process involves retrieving information from *
 - Split the track ID list into smaller chunks.
 - Use `sp.audio_feature` to retrieve 100 track features per API request.
 - Store the extracted data in MongoDB.
+- 
 ![crawl_api](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/crawl_api.jpg)
 ### Daily Data Scraping and Storing Strategy
-
 #### 1. Initial Data Scraping and Storing
 - Since calling the **Spotify API** for **15,000** artists at once risks exceeding limits, the process is split over 3 days (**5,000 artists/day**). Data is first saved in **CSV files** before being loaded into **MongoDB** as the initial dataset.
-
 #### 2. Subsequent Data Scraping and Storing
 - To avoid duplicate data, each day's new **15,000** artist names from **Kworb.net** are compared with the existing **15,000** artists in **MongoDB** using a **Left Anti Join**. Only new artists are processed via the **Spotify API**, ensuring efficient updates.
-
-![left_anti_join](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/leftanti_join_artistname.png)
+  
+  ![left_anti_join](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/leftanti_join_artistname.png)
 - This strategy ensures that we only fetch **new artists** to call the **Spotify API** and retrieve album and track information, minimizing duplicates and reducing API requests. (After performing the **Left Anti Join**, the number of daily artist names is around **3,000**).
-
 - New artist names are stored in **MongoDB**, then retrieved to call the **Spotify API** to fetch artist, album, and track data, which is also stored in **MongoDB**. We add an **execute_date** column to track the data execution date and ensure that only the latest data is used for API calls, preventing redundant requests for past data.
-
+  ![daily_crawl](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/daily_crawl_data.png)
