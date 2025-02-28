@@ -23,14 +23,14 @@ The data source is initially collected from https://kworb.net/itunes/extended.ht
 ![directory](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/directories.PNG)
 ## Project Overview
 ### Data Collection and Ingestion
-The data collection and ingestion process involves retrieving information from Kworb.net and Spotify API, then storing it in MongoDB.
+The data collection and ingestion process involves retrieving information from **Kworb.net** and **Spotify API**, then storing it in **MongoDB**.
 #### 1.Retrieving Data from Kworb.net
 - Use `pandas.read_html(url)` to extract tables from the website.
 - Select the first table and extract two columns: `Pos` (ranking position) and `Artist` (artist name).
-- Store the list of `15,000` artists in MongoDB.
+- Store the list of **15,000** artists in **MongoDB**.
 #### 2. Fetching Artist Information from Spotify API
-- Use Spotipy to connect to the Spotify API with Client ID and Client Secret.
-- Call `sp.search ` to retrieve artist details by name and store the data in MongoDB.
+- Use Spotipy to connect to the **Spotify API** with **Client ID** and **Client Secret**.
+- Call `sp.search ` to retrieve artist details by name and store the data in **MongoDB**.
 #### 3. Retrieving Album and Track Information
 - Use the artist ID to fetch a list of album IDs via sp.artist_albums.
 - Split the album list into smaller chunks to optimize API calls.
@@ -41,3 +41,15 @@ The data collection and ingestion process involves retrieving information from K
 - Split the track ID list into smaller chunks.
 - Use `sp.audio_feature` to retrieve 100 track features per API request.
 - Store the extracted data in MongoDB.
+### Daily Data Scraping and Storing Strategy
+
+#### 1. Initial Data Scraping and Storing
+Since calling the **Spotify API** for **15,000** artists at once risks exceeding limits, the process is split over 3 days (**5,000 artists/day**). Data is first saved in **CSV files** before being loaded into **MongoDB** as the initial dataset.
+
+#### 2. Subsequent Data Scraping and Storing
+To avoid duplicate data, each day's new **15,000** artist names from **Kworb.net** are compared with the existing **15,000** artists in **MongoDB** using a **Left Anti Join**. Only new artists are processed via the **Spotify API**, ensuring efficient updates.
+
+This strategy ensures that we only fetch **new artists** to call the **Spotify API** and retrieve album and track information, minimizing duplicates and reducing API requests. (After performing the **Left Anti Join**, the number of daily artist names is around **3,000**).
+
+New artist names are stored in **MongoDB**, then retrieved to call the **Spotify API** to fetch artist, album, and track data, which is also stored in **MongoDB**. We add an **execute_date** column to track the data execution date and ensure that only the latest data is used for API calls, preventing redundant requests for past data.
+
