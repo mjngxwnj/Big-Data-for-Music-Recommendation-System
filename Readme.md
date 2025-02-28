@@ -24,7 +24,7 @@ The data source is initially collected from https://kworb.net/itunes/extended.ht
 ## Project Overview
 ### Data Collection and Ingestion
 The data collection and ingestion process involves retrieving information from **Kworb.net** and **Spotify API**, then storing it in **MongoDB**.
-#### 1.Retrieving Data from Kworb.net
+#### 1. Retrieving Data from Kworb.net
 - Use `pandas.read_html(url)` to extract tables from the website.
 - Select the first table and extract two columns: `Pos` (ranking position) and `Artist` (artist name).
 - Store the list of **15,000** artists in **MongoDB**.
@@ -41,8 +41,7 @@ The data collection and ingestion process involves retrieving information from *
 - Split the track ID list into smaller chunks.
 - Use `sp.audio_feature` to retrieve 100 track features per API request.
 - Store the extracted data in MongoDB.
-- 
-![crawl_api](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/crawl_api.jpg)
+  ![crawl_api](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/crawl_api.jpg)
 ### Daily Data Scraping and Storing Strategy
 #### 1. Initial Data Scraping and Storing
 - Since calling the **Spotify API** for **15,000** artists at once risks exceeding limits, the process is split over 3 days (**5,000 artists/day**). Data is first saved in **CSV files** before being loaded into **MongoDB** as the initial dataset.
