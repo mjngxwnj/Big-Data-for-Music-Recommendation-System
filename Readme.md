@@ -2,6 +2,25 @@
 ## Table of Contents
 - [Introduction](#introduction)
 - [Project Overview](#project-overview)
+  - [Data Collection and Ingestion](#data-collection-and-ingestion)
+    - [1. Fetching Data from Kworb.net](#1-retrieving-data-from-kworbnet)
+    - [2. Fetching Artist Information from Spotify API](#2-fetching-artist-information-from-spotify-api)
+    - [3. Fetching Album and Track Information](#3-retrieving-album-and-track-information)
+    - [4. Fetching Track Features](#4-fetching-track-features)
+  - [Daily Data Scraping and Storing Strategy](#daily-data-scraping-and-storing-strategy)
+    - [1. Initial Data Scraping and Storing](#1-initial-data-scraping-and-storing)
+    - [2. Subsequent Data Scraping and Storing](#2-subsequent-data-scraping-and-storing)
+  - [Three-Layer Data Lake Processing](#three-layer-data-lake-processing)
+    - [1. Bronze Layer Processing](#1-bronze-layer-processing)
+    - [2. Silver Layer Processing](#2-silver-layer-processing)
+    - [3. Gold Layer Processing](#3-gold-layer-processing)
+  - [Data Warehouse Storing](#data-warehouse-storing)
+  - [Exploratory Data Analysis (EDA)](#exploratory-data-analysis-eda)
+  - [Machine Learning for Recommendation System](#machine-learning-for-recommendation-system)
+    - [1. Building model using Content-Based Filtering (CBF)](#1-building-model-using-content-based-filtering-cbf)
+    - [2. Build model using K-means clustering](#2-build-model-using-k-means-clustering)
+  - [Application Demo](#application-demo)
+
 ## Introduction 
 In this day and age, music is an essential part of life, offering both entertainment and emotional connection. Our team aims to create an end-to-end date pipeline architecture that covers data collection, processing, storage, analysis, reporting, and building a recommendation system for music based on user input.
 
@@ -22,20 +41,17 @@ The data source is initially collected from https://kworb.net/itunes/extended.ht
 ### Directory Structure
 ![directory](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/directories.PNG)
 
-### Application Demo
-![demo](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/demo.gif)
-
 ## Project Overview
 ### Data Collection and Ingestion
 The data collection and ingestion process involves retrieving information from **Kworb.net** and **Spotify API**, then storing it in **MongoDB**.
-#### 1. Retrieving Data from Kworb.net
+#### 1. Fetching Data from Kworb.net
 - Use `pandas.read_html(url)` to extract tables from the website.
 - Select the first table and extract two columns: `Pos` (ranking position) and `Artist` (artist name).
 - Store the list of **15,000** artists in **MongoDB**.
 #### 2. Fetching Artist Information from Spotify API
 - Use Spotipy to connect to the **Spotify API** with **Client ID** and **Client Secret**.
 - Call `sp.search ` to retrieve artist details by name and store the data in **MongoDB**.
-#### 3. Retrieving Album and Track Information
+#### 3. Fetching Album and Track Information
 - Use the artist ID to fetch a list of album IDs via sp.artist_albums.
 - Split the album list into smaller chunks to optimize API calls.
 - Use `sp.album` to retrieve 20 albums and their tracks in a single API request.
@@ -296,5 +312,9 @@ K-means is an unsupervised machine learning algorithm used for clustering data i
 - PCA helps retain maximum variance while reducing data complexity. We plot 1% of the dataset to visualize clusters after applying PCA.
   
   ![PCA_visualization](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/PCA_visualization.png)
+  
+### Application Demo
+
+![demo](https://github.com/mjngxwnj/Big-Data-for-Music-Recommendation-System/blob/main/images/demo.gif)
 
 ### _**Feel free to use!**_
